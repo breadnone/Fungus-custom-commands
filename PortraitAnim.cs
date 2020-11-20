@@ -4,7 +4,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
-
+using Random=UnityEngine.Random;
 
 namespace Fungus
 {
@@ -13,10 +13,9 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Narrative", 
                  "PortraitAnim", 
-                 "Controls a character portrait.")]
+                 "Character frame-by-frame animateion using portrait lists")]
     public class PortraitAnim : ControlWithDisplay<DisplayType>
     {
-        public DisplayType IsDisplayNone;
         [Tooltip("Stage to display portrait on")]
         [SerializeField] protected Stage stage;
         [Tooltip("Character to display")]
@@ -27,28 +26,27 @@ namespace Fungus
         [SerializeField] protected Sprite portrait2;
         [Tooltip("Portrait to display")]
         [SerializeField] protected Sprite portrait3;
-        [Tooltip("Wait until the tween has finished before executing the next command")]
-        [SerializeField] protected bool waitUntilFinished = false;
-        
+        [Tooltip("Delay between sequence")]
+        [SerializeField] protected float delay = 0.2f;
+         [SerializeField] protected bool RandomEndDelay = false;
+        [SerializeField] protected float endFrameDelay = 3f;
+         
         #region Public members
         /// <summary>
         /// Stage to display portrait on.
         /// </summary>
         public virtual Stage _Stage { get { return stage; } set { stage = value; } }
-
         /// <summary>
         /// Character to display.
         /// </summary>
         public virtual Character _Character { get { return character; } set { character = value; } }
-
         /// <summary>
         /// Portrait to display.
         /// </summary>
         public virtual Sprite _Portrait1 { get { return portrait1; } set { portrait1 = value; } }
         public virtual Sprite _Portrait2 { get { return portrait2; } set { portrait2 = value; } }
         public virtual Sprite _Portrait3 { get { return portrait3; } set { portrait3 = value; } }
-
-        [SerializeField]public bool isAnimating = false;
+        [HideInInspector]public bool isAnimating = false;
         private IEnumerator coroutine;    
         protected void sequenceMove()
         {
@@ -60,7 +58,7 @@ namespace Fungus
             // Selected "use default Portrait Stage"
             if(display == DisplayType.None)
             {
-                disablePortraitAnim(false);
+                //disablePortraitAnim(false);
                 PortraitAnim poranim = GetComponent<PortraitAnim>();
                 poranim.disablePortraitAnim(false);
             }
@@ -73,7 +71,6 @@ namespace Fungus
                     return;
                 }
             }
-
             // If no display specified, do nothing
             if (IsDisplayNone(display))
             {
@@ -115,11 +112,18 @@ namespace Fungus
                 {               
                     //yield return new WaitForSeconds(0f);
                     por1();
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(delay);
                     por2();
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(delay);
                     por3();
-                    yield return new WaitForSeconds(0.2f);                    
+                    if(RandomEndDelay)
+                    {
+                        yield return new WaitForSeconds(Random.Range(4f, 8f));
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(endFrameDelay);
+                    }
                 }
             }
             else
