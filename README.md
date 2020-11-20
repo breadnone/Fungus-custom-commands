@@ -6,3 +6,4 @@ ThreeFramer - Frame-by-frame background animation
 Transition - Transition animation  
 twoDeffects - Fake 2D particle system  
 PortraitAnim - Character frame-by-frame animation utilizing the portraits list(use Show & None to enable and disable and only those two work)  
+Access from code : PortraitAnim varname = GetComponent<PortraitAnim>(); varname.disablePortraitAnim(false);
