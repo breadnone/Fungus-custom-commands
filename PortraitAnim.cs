@@ -6,6 +6,12 @@ using System.Collections;
 using System;
 using Random=UnityEngine.Random;
 
+public enum actPorAnim
+{
+    Enable,
+    Disable
+}
+
 namespace Fungus
 {
     /// <summary>
@@ -14,8 +20,10 @@ namespace Fungus
     [CommandInfo("Narrative", 
                  "PortraitAnim", 
                  "Character frame-by-frame animateion using portrait lists")]
-    public class PortraitAnim : ControlWithDisplay<DisplayType>
+    public class PortraitAnim : Command
     {
+        [HideInInspector] protected DisplayType display = DisplayType.Show;
+        [SerializeField] public actPorAnim enableAnimation; 
         [Tooltip("Stage to display portrait on")]
         [SerializeField] protected Stage stage;
         [Tooltip("Character to display")]
@@ -26,12 +34,14 @@ namespace Fungus
         [SerializeField] protected Sprite portrait3;
         [SerializeField] protected Sprite portrait4;
         [SerializeField] protected Sprite portrait5;
-
+        [Tooltip("Defines how many times it would be animated before get disabled automatically")]
+        [SerializeField] protected bool useCyclesRange = false;
+        [Tooltip("Delay between sequence")]
+        [SerializeField] protected int cycles = 2;
         [Tooltip("Delay between sequence")]
         [SerializeField] protected float delay = 0.1f;
         [SerializeField] protected bool RandomEndDelay = false;
         [SerializeField] protected float endFrameDelay = 3f;
-         
         #region Public members
         /// <summary>
         /// Stage to display portrait on.
@@ -58,12 +68,17 @@ namespace Fungus
         }
         public override void OnEnter()
         {
-            // Selected "use default Portrait Stage"
-            if(display == DisplayType.None)
+            if (enableAnimation == actPorAnim.Enable)
             {
-                //disablePortraitAnim(false);
-                PortraitAnim poranim = GetComponent<PortraitAnim>();
-                poranim.disablePortraitAnim(false);
+                if(character && portrait1 && portrait2 && portrait3 && portrait4 && portrait5 != null)
+                {
+                    sequenceMove();
+                }
+                else
+                {
+                    Continue();
+                    return;
+                }
             }
             if (stage == null)
             {
@@ -74,86 +89,105 @@ namespace Fungus
                     return;
                 }
             }
-            // If no display specified, do nothing
-            if (IsDisplayNone(display))
+            if (enableAnimation == actPorAnim.Disable)
             {
+                PortraitAnim portan = GetComponent<PortraitAnim>();
+                portan.disablePortraitAnim(false);
                 Continue();
-                return;
             }
-            sequenceMove();            
         }
         public virtual void disablePortraitAnim(bool anstate)
         {
             this.isAnimating = false;
             this.StopAllCoroutines();
         }
+        private static int amCycle = 0;
         public IEnumerator charAnim(float delay)
         {
-            if (display != DisplayType.None && character != null && portrait1 && portrait2 && portrait3 && portrait4 && portrait5 != null)
+            if (enableAnimation == actPorAnim.Enable && character != null)
             {
-                PortraitOptions options = new PortraitOptions();
-                isAnimating = true;                
-                options.character = character;
-                options.display = display;
+                if(portrait1 && portrait2 && portrait3 && portrait4 && portrait5 != null)
+                {
+                    PortraitOptions options = new PortraitOptions();
+                    isAnimating = true;                
+                    options.character = character;
+                    options.display = display;
 
-                var por1 = new Action(() => {
-                options.portrait = portrait1;
-                stage.RunPortraitCommand(options, null);
-                } );
-                var por2 = new Action(() => {
-                options.portrait = portrait2;
-                stage.RunPortraitCommand(options, null);
-                } );
-                var por3 = new Action(() => {
-                options.portrait = portrait3;
-                stage.RunPortraitCommand(options, null);                
-                } );
-                var por4 = new Action(() => {
-                options.portrait = portrait4;
-                stage.RunPortraitCommand(options, null);                
-                } );
-                var por5 = new Action(() => {
-                options.portrait = portrait5;
-                stage.RunPortraitCommand(options, null);                
-                } );
-                Continue();
-                while(isAnimating)
-                {               
-                    por1();
-                    yield return new WaitForSeconds(delay);
-                    por2();
-                    yield return new WaitForSeconds(delay);
-                    por3();
-                    yield return new WaitForSeconds(delay);
-                    por4();
-                    yield return new WaitForSeconds(delay);
-                    por5();
-                    yield return new WaitForSeconds(delay);
-                    por4();
-                    yield return new WaitForSeconds(delay);
-                    por3();
-                    yield return new WaitForSeconds(delay);
-                    por2();
-                    yield return new WaitForSeconds(delay);
-                    por1();
-                    if(RandomEndDelay)
+                    var por1 = new Action(() => {
+                    options.portrait = portrait1;
+                    stage.RunPortraitCommand(options, null);
+                    } );
+                    var por2 = new Action(() => {
+                    options.portrait = portrait2;
+                    stage.RunPortraitCommand(options, null);
+                    } );
+                    var por3 = new Action(() => {
+                    options.portrait = portrait3;
+                    stage.RunPortraitCommand(options, null);                
+                    } );
+                    var por4 = new Action(() => {
+                    options.portrait = portrait4;
+                    stage.RunPortraitCommand(options, null);                
+                    } );
+                    var por5 = new Action(() => {
+                    options.portrait = portrait5;
+                    stage.RunPortraitCommand(options, null);                
+                    } );
+                    Continue();
+                    while(isAnimating)
                     {
-                        yield return new WaitForSeconds(Random.Range(4f, 8f));
+                        amCycle++;
+                        por1();
+                        yield return new WaitForSeconds(delay);
+                        por2();
+                        yield return new WaitForSeconds(delay);
+                        por3();
+                        yield return new WaitForSeconds(delay);
+                        por4();
+                        yield return new WaitForSeconds(delay);
+                        por5();
+                        yield return new WaitForSeconds(delay);
+                        por4();
+                        yield return new WaitForSeconds(delay);
+                        por3();
+                        yield return new WaitForSeconds(delay);
+                        por2();
+                        yield return new WaitForSeconds(delay);
+                        por1();
+                        if(RandomEndDelay)
+                        {
+                            yield return new WaitForSeconds(Random.Range(4f, 8f));
+                        }
+                        else
+                        {
+                            yield return new WaitForSeconds(endFrameDelay);
+                        }
+                        if(useCyclesRange)
+                        {
+                            if(amCycle == cycles)
+                            {
+                                PortraitAnim portan = GetComponent<PortraitAnim>();
+                                portan.disablePortraitAnim(false);
+                                yield return new WaitForSeconds(0);
+                                Continue();
+                            }
+                        }
                     }
-                    else
-                    {
-                        yield return new WaitForSeconds(endFrameDelay);
-                    }
+                }
+                else
+                {
+                    Continue();
                 }
             }
             else
             {
                 Continue();
             }
+
         }        
         public override string GetSummary()
         {
-            if (display != DisplayType.None && character == null)
+            if (enableAnimation != actPorAnim.Disable && character == null)
             {
                 return "Error: No character or display selected";
             }
