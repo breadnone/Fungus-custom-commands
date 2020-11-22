@@ -38,7 +38,6 @@ namespace Fungus
 
         private static int sibIndex = 0;
         private static int avobj = 0;
-
         public IEnumerator SequenceOfLines(float seqMove)
         {
             foreach(GameObject bobo in imgSrc)
@@ -98,7 +97,7 @@ namespace Fungus
         {
             this.stillTweening = false;
             this.inStates();
-            this.StopCoroutine(coroutine);
+            this.StopAllCoroutines();
         }
         public override void OnEnter()
         {

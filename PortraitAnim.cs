@@ -99,7 +99,7 @@ namespace Fungus
         public virtual void disablePortraitAnim(bool anstate)
         {
             this.isAnimating = false;
-            this.StopCoroutine(coroutine);
+            this.StopAllCoroutines();
         }
         private static int amCycle = 0;
         public IEnumerator charAnim(float delay)
@@ -178,12 +178,6 @@ namespace Fungus
             string characterSummary = "";
             string portraitSummary = "";
             characterSummary = character.name;
-
-            if (enableAnimation == actPorAnim.Disable)
-            {
-                PortraitAnim portan = GetComponent<PortraitAnim>();
-                portan.disablePortraitAnim(false);
-            }
 
             for(int i = 0; i < portrait1.Length; i++)
             {
