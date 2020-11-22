@@ -102,61 +102,60 @@ namespace Fungus
             this.StopAllCoroutines();
         }
         private static int amCycle = 0;
-        private static int avobj = 0;
         public IEnumerator charAnim(float delay)
         {
-            foreach (Sprite bobo in portrait1)
+            for (int i = 0; i < portrait1.Length; i++)
             {
-                if (bobo != null)
+                if (portrait1[i] != null)
                 {
-                    avobj++;
-                }
-            }
-            if (portrait1.Length == avobj)
-            {
-                if (enableAnimation == actPorAnim.Enable && character != null)
-                {
-                    PortraitOptions options = new PortraitOptions();
-                    isAnimating = true;
-                    options.character = character;
-                    options.display = display;
-                    Continue();
-                    while (isAnimating)
+                    if (enableAnimation == actPorAnim.Enable && character != null)
                     {
-                        amCycle++;
-                        foreach (Sprite jav in portrait1)
+                        PortraitOptions options = new PortraitOptions();
+                        isAnimating = true;
+                        options.character = character;
+                        options.display = display;
+                        Continue();
+                        while (isAnimating)
                         {
-                            options.portrait = jav;
-                            stage.RunPortraitCommand(options, null);
-                            yield return new WaitForSeconds(delay);
-                        }
-                        if(reverseLoop)
-                        {
-                            foreach (Sprite jav2 in portrait1.Reverse())
+                            amCycle++;
+                            foreach (Sprite jav in portrait1)
                             {
-                                options.portrait = jav2;
+                                options.portrait = jav;
                                 stage.RunPortraitCommand(options, null);
                                 yield return new WaitForSeconds(delay);
                             }
-                        }
-                        if (RandomEndDelay)
-                        {
-                            yield return new WaitForSeconds(Random.Range(4f, 12f));
-                        }
-                        else
-                        {
-                            yield return new WaitForSeconds(endFrameDelay);
-                        }
-                        if (useCyclesRange)
-                        {
-                            if (amCycle == cycles)
+                            if(reverseLoop)
                             {
-                                PortraitAnim portan = GetComponent<PortraitAnim>();
-                                portan.disablePortraitAnim(false);
-                                yield return new WaitForSeconds(0);
-                                Continue();
+                                foreach (Sprite jav2 in portrait1.Reverse())
+                                {
+                                    options.portrait = jav2;
+                                    stage.RunPortraitCommand(options, null);
+                                    yield return new WaitForSeconds(delay);
+                                }
+                            }
+                            if (RandomEndDelay)
+                            {
+                                yield return new WaitForSeconds(Random.Range(4f, 12f));
+                            }
+                            else
+                            {
+                                yield return new WaitForSeconds(endFrameDelay);
+                            }
+                            if (useCyclesRange)
+                            {
+                                if (amCycle == cycles)
+                                {
+                                    PortraitAnim portan = GetComponent<PortraitAnim>();
+                                    portan.disablePortraitAnim(false);
+                                    yield return new WaitForSeconds(0);
+                                    Continue();
+                                }
                             }
                         }
+                    }
+                    else
+                    {
+                        Continue();
                     }
                 }
                 else
@@ -164,10 +163,39 @@ namespace Fungus
                     Continue();
                 }
             }
-            else
+        }
+        public override string GetSummary()
+        {
+            if (character == null)
             {
-                Continue();
+                return "Error: No character selected";
             }
+            string characterSummary = "";
+            string portraitSummary = "";
+            string stageSummary = "";
+            characterSummary = character.name;
+            if (stage != null)
+            {
+                stageSummary = " on \"" + stage.name + "\"";
+            }
+
+            if (enableAnimation == actPorAnim.Enable && character == null)
+            {
+                return "Error: No character selected";
+            }
+            for(int i = 0; i < portrait1.Length; i++)
+            {
+                if (enableAnimation == actPorAnim.Enable && character != null && portrait1[i] == null)
+                {
+                    return "Error: One of portrait slots cannot be empty";
+                }
+
+                if (portrait1[i] != null)
+                {
+                    portraitSummary = " " + portrait1[i].name;
+                }
+            }
+            return characterSummary + portraitSummary + "\"" + stageSummary;
         }
         public override Color GetButtonColor()
         {
