@@ -32,7 +32,7 @@ namespace Fungus
         [Tooltip("Portrait to display")]
         [SerializeField] protected Sprite[] portrait1;
         [Tooltip("Delay between sequence")]
-        [SerializeField] protected float delay = 0.1f;
+        [SerializeField] protected float frameDelay = 0.1f;
         [Tooltip("Reverse the loop after completion of the 1st cycle")]
         [SerializeField] protected bool reverseLoop = false;
         [Tooltip("Defines how many times it would be animated before get disabled automatically")]
@@ -99,7 +99,7 @@ namespace Fungus
         public virtual void disablePortraitAnim(bool anstate)
         {
             this.isAnimating = false;
-            this.StopAllCoroutines();
+            this.StopCoroutine(coroutine);
         }
         private static int amCycle = 0;
         public IEnumerator charAnim(float delay)
@@ -122,7 +122,7 @@ namespace Fungus
                             {
                                 options.portrait = jav;
                                 stage.RunPortraitCommand(options, null);
-                                yield return new WaitForSeconds(delay);
+                                yield return new WaitForSeconds(frameDelay);
                             }
                             if(reverseLoop)
                             {
@@ -130,7 +130,7 @@ namespace Fungus
                                 {
                                     options.portrait = jav2;
                                     stage.RunPortraitCommand(options, null);
-                                    yield return new WaitForSeconds(delay);
+                                    yield return new WaitForSeconds(frameDelay);
                                 }
                             }
                             if (RandomEndDelay)

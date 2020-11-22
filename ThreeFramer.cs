@@ -98,6 +98,7 @@ namespace Fungus
         {
             this.stillTweening = false;
             this.inStates();
+            this.StopCoroutine(coroutine);
         }
         public override void OnEnter()
         {
