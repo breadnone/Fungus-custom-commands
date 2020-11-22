@@ -6,7 +6,7 @@ using System.Collections;
 using System;
 using Random = UnityEngine.Random;
 using System.Linq;
-using System.Text;
+
 public enum actPorAnim
 {
     Enable,
@@ -20,7 +20,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Narrative",
                  "PortraitAnim",
-                 "Character frame-by-frame animation using portrait lists. Cycle = Stopping the animation based on how many loops")]
+                 "Character frame-by-frame animation using portrait lists. Cycle = Stopping the animation based on how many loops. IMPORTANT! Do not use Dim or any other fancy settings in Stage")]
     public class PortraitAnim : Command
     {
         [HideInInspector] protected DisplayType display = DisplayType.Show;
@@ -65,8 +65,20 @@ namespace Fungus
         }
         public override void OnEnter()
         {
+            if (stage == null)
+            {
+                stage = Stage.GetActiveStage();
+                if (stage == null)
+                {
+                    Continue();
+                    return;
+                }
+            }
             if (enableAnimation == actPorAnim.Enable)
             {
+                Stage disdim = Stage.GetActiveStage();
+                disdim.GetComponent<Stage>().DimPortraits = false;
+
                 for (int i = 0; i < portrait1.Length; i++)
                 {
                     if (portrait1[i] != null)
@@ -80,15 +92,7 @@ namespace Fungus
                     }
                 }
             }
-            if (stage == null)
-            {
-                stage = Stage.GetActiveStage();
-                if (stage == null)
-                {
-                    Continue();
-                    return;
-                }
-            }
+
             if (enableAnimation == actPorAnim.Disable)
             {
                 PortraitAnim portan = GetComponent<PortraitAnim>();
@@ -166,17 +170,15 @@ namespace Fungus
         }
         public override string GetSummary()
         {
-            if (enableAnimation == actPorAnim.Enable && character == null)
+            if (character == null)
             {
                 return "Error: No character selected";
             }
-            if(character == null)
-            {
-                return null;
-            }
-
+     
             string characterSummary = "";
             string portraitSummary = "";
+            string stageSummary = "";
+
             characterSummary = character.name;
 
             for(int i = 0; i < portrait1.Length; i++)
@@ -185,19 +187,8 @@ namespace Fungus
                 {
                     return "Error: One of portrait slots cannot be empty";
                 }
-
-                if (portrait1[i] != null)
-                {
-                    var bg = portrait1[i];
-                    StringBuilder builder = new StringBuilder();
-                    foreach(Sprite oo in portrait1)
-                    {
-                        var jj = builder.Append(oo.name).Append(",");
-                    }
-                    portraitSummary = " " + builder.ToString().TrimEnd(new char[] { ',' });
-                }
             }
-            return characterSummary + ":" + portraitSummary;
+            return characterSummary + ":" + portraitSummary + ":" +stageSummary;
         }
         public override Color GetButtonColor()
         {
