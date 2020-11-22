@@ -97,7 +97,6 @@ namespace Fungus
             {
                 PortraitAnim portan = GetComponent<PortraitAnim>();
                 portan.disablePortraitAnim(false);
-                Continue();
             }
         }
         public virtual void disablePortraitAnim(bool anstate)
@@ -107,8 +106,7 @@ namespace Fungus
             Continue();
         }
         private static int amCycle = 0;
-        private static int amCycleRes = 0;
-        
+        private static int amCycleRes = 0;        
         public IEnumerator charAnim(float delay)
         {
             for (int i = 0; i < portrait1.Length; i++)
@@ -116,21 +114,17 @@ namespace Fungus
                 if (portrait1[i] != null)
                 {
                     if (enableAnimation == actPorAnim.Enable && character != null)
-                    {
-                        PortraitOptions options = new PortraitOptions();
+                    {                        
                         isAnimating = true;
-                        
-                        
-                        Continue();
+                        PortraitOptions options = new PortraitOptions();
+                        options.character = character;
+                        options.display = display;                        
                         while (isAnimating)
                         {                            
                             foreach (Sprite jav in portrait1)
-                            {   
-                                
-                                options.character = character;
-                                options.display = display;
+                            {
                                 options.portrait = jav;
-                                stage.RunPortraitCommand(options, null);
+                                stage.RunPortraitCommand(options, Continue);
                                 yield return new WaitForSeconds(frameDelay);
                             }
                             
@@ -138,10 +132,8 @@ namespace Fungus
                             {
                                 foreach (Sprite jav in portrait1.Reverse())
                                 {
-                                    options.character = character;
-                                    options.display = display;
                                     options.portrait = jav;
-                                    stage.RunPortraitCommand(options, null);
+                                    stage.RunPortraitCommand(options, Continue);
                                     yield return new WaitForSeconds(frameDelay);
                                 }
                             }
@@ -164,7 +156,7 @@ namespace Fungus
                             {
                                 if (amCycleRes == cycles)
                                 {
-                                    this.disablePortraitAnim(true);
+                                    this.disablePortraitAnim(false);
                                 }
                             }
                         }
