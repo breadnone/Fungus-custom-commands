@@ -104,8 +104,11 @@ namespace Fungus
         {
             this.isAnimating = false;
             this.StopAllCoroutines();
+            Continue();
         }
         private static int amCycle = 0;
+        private static int amCycleRes = 0;
+        
         public IEnumerator charAnim(float delay)
         {
             for (int i = 0; i < portrait1.Length; i++)
@@ -116,27 +119,39 @@ namespace Fungus
                     {
                         PortraitOptions options = new PortraitOptions();
                         isAnimating = true;
-                        options.character = character;
-                        options.display = display;
+                        
+                        
                         Continue();
                         while (isAnimating)
-                        {
-                            amCycle++;
+                        {                            
                             foreach (Sprite jav in portrait1)
-                            {
+                            {   
+                                
+                                options.character = character;
+                                options.display = display;
                                 options.portrait = jav;
                                 stage.RunPortraitCommand(options, null);
                                 yield return new WaitForSeconds(frameDelay);
                             }
+                            
                             if(reverseLoop)
                             {
-                                foreach (Sprite jav2 in portrait1.Reverse())
+                                foreach (Sprite jav in portrait1.Reverse())
                                 {
-                                    options.portrait = jav2;
+                                    options.character = character;
+                                    options.display = display;
+                                    options.portrait = jav;
                                     stage.RunPortraitCommand(options, null);
                                     yield return new WaitForSeconds(frameDelay);
                                 }
                             }
+
+                            amCycle++;
+                            var bh = amCycle / portrait1.Length;
+                            amCycleRes = bh;
+
+                            //Debug.Log("amcycle:"+ amCycle + "amcycleres:" + amCycleRes);
+
                             if (RandomEndDelay)
                             {
                                 yield return new WaitForSeconds(Random.Range(4f, 12f));
@@ -147,12 +162,9 @@ namespace Fungus
                             }
                             if (useCyclesRange)
                             {
-                                if (amCycle == cycles)
+                                if (amCycleRes == cycles)
                                 {
-                                    PortraitAnim portan = GetComponent<PortraitAnim>();
-                                    portan.disablePortraitAnim(false);
-                                    yield return new WaitForSeconds(0);
-                                    Continue();
+                                    this.disablePortraitAnim(true);
                                 }
                             }
                         }
