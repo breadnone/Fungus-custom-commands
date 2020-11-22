@@ -166,23 +166,25 @@ namespace Fungus
         }
         public override string GetSummary()
         {
-            if (character == null)
-            {
-                return "Error: No character selected";
-            }
-            string characterSummary = "";
-            string portraitSummary = "";
-            string stageSummary = "";
-            characterSummary = character.name;
-            if (stage != null)
-            {
-                stageSummary = " on \"" + stage.name + "\"";
-            }
-
             if (enableAnimation == actPorAnim.Enable && character == null)
             {
                 return "Error: No character selected";
             }
+            if(character == null)
+            {
+                return null;
+            }
+
+            string characterSummary = "";
+            string portraitSummary = "";
+            characterSummary = character.name;
+
+            if (enableAnimation == actPorAnim.Disable)
+            {
+                PortraitAnim portan = GetComponent<PortraitAnim>();
+                portan.disablePortraitAnim(false);
+            }
+
             for(int i = 0; i < portrait1.Length; i++)
             {
                 if (enableAnimation == actPorAnim.Enable && character != null && portrait1[i] == null)
@@ -201,7 +203,7 @@ namespace Fungus
                     portraitSummary = " " + builder.ToString().TrimEnd(new char[] { ',' });
                 }
             }
-            return characterSummary + portraitSummary + "\"" + stageSummary;
+            return characterSummary + ":" + portraitSummary;
         }
         public override Color GetButtonColor()
         {
