@@ -6,7 +6,7 @@ using System.Collections;
 using System;
 using Random = UnityEngine.Random;
 using System.Linq;
-
+using System.Text;
 public enum actPorAnim
 {
     Enable,
@@ -192,7 +192,13 @@ namespace Fungus
 
                 if (portrait1[i] != null)
                 {
-                    portraitSummary = " " + portrait1[i].name;
+                    var bg = portrait1[i];
+                    StringBuilder builder = new StringBuilder();
+                    foreach(Sprite oo in portrait1)
+                    {
+                        var jj = builder.Append(oo.name).Append(",");
+                    }
+                    portraitSummary = " " + builder.ToString().TrimEnd(new char[] { ',' });
                 }
             }
             return characterSummary + portraitSummary + "\"" + stageSummary;
