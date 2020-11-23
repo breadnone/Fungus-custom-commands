@@ -5,7 +5,6 @@ using UnityEngine;
 using System.Collections;
 using System;
 using Random = UnityEngine.Random;
-using System.Linq;
 
 public enum actPorAnim
 {
@@ -23,7 +22,6 @@ namespace Fungus
                  "Character frame-by-frame animation using portrait lists. Cycle = Stopping the animation based on how many loops. IMPORTANT! Create separate Stage just for this custom comamand and Do not use Dim or any other fancy settings in Stage")]
     public class PortraitAnim : ControlWithDisplay<DisplayType>
     {
-        //[HideInInspector] protected DisplayType display = DisplayType.Show;
         [SerializeField] public actPorAnim enableAnimation;
         public Stage stage;
         [Tooltip("Character to display")]
@@ -113,7 +111,6 @@ namespace Fungus
             {
                 if (enableAnimation == actPorAnim.Enable && character != null)
                 {
-                    var arpor = new Sprite[]{portrait1, portrait2, portrait3, portrait4, portrait5};
                     isAnimating = true;
                     PortraitOptions options = new PortraitOptions();
                     var por1 = new Action(() =>
