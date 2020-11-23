@@ -25,8 +25,7 @@ namespace Fungus
     {
         //[HideInInspector] protected DisplayType display = DisplayType.Show;
         [SerializeField] public actPorAnim enableAnimation;
-        [Tooltip("Stage to display portrait on")]
-        [SerializeField] protected Stage stage;
+        public Stage stage;
         [Tooltip("Character to display")]
         [SerializeField] protected Character character;
         [Tooltip("Portrait to display")]
@@ -226,7 +225,6 @@ namespace Fungus
             string stageSummary = "";
 
             characterSummary = character.name;
-
 
             if (enableAnimation == actPorAnim.Enable && portrait1 && portrait2 && portrait3 && portrait4 && portrait5 == null)
             {
