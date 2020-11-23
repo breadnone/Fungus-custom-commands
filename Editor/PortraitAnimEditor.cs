@@ -50,17 +50,7 @@ namespace Fungus.EditorUtils
             
             PortraitAnim t = target as PortraitAnim;
 
-            if (Stage.ActiveStages.Count > 1)
-            {
-                CommandEditor.ObjectField<Stage>(stageProp, 
-                                                         new GUIContent("Portrait Stage", "Stage to display the character portraits on"), 
-                                                         new GUIContent("<Default>"),
-                                                         Stage.ActiveStages);
-            }
-            else
-            {
-                t._Stage = null;
-            }
+
             // Format Enum names
             string[] displayLabels = StringFormatter.FormatEnumNames(t.Display,"<None>");
             displayProp.enumValueIndex = EditorGUILayout.Popup("Display", (int)displayProp.enumValueIndex, displayLabels);
@@ -72,7 +62,6 @@ namespace Fungus.EditorUtils
                                                  new GUIContent("<None>"),
                                                  Character.ActiveCharacters);
 
-            Stage s = t._Stage;
             // Only show optional portrait fields once required fields have been filled...
             if (t._Character != null)                // Character is selected
             {
@@ -81,17 +70,7 @@ namespace Fungus.EditorUtils
                 {
                     EditorGUILayout.HelpBox("This character has no portraits. Please add portraits to the character's prefab before using this command.", MessageType.Error);
                 }
-                if (t._Stage == null)            // If default portrait stage selected
-                {
-                    if (t._Stage == null)        // If no default specified, try to get any portrait stage in the scene
-                    {
-                        s = GameObject.FindObjectOfType<Stage>();
-                    }
-                }
-                if (s == null)
-                {
-                    EditorGUILayout.HelpBox("No portrait stage has been set.", MessageType.Error);
-                }
+
             }
             if (t.Display != DisplayType.None && t._Character != null) 
             {
@@ -118,6 +97,7 @@ namespace Fungus.EditorUtils
                                                       new GUIContent(""),
                                                       t._Character.Portraits);
    
+                EditorGUILayout.PropertyField(stageProp);
                 EditorGUILayout.PropertyField(enblst);
                 EditorGUILayout.PropertyField(framedelay);
                 EditorGUILayout.PropertyField(reverseloop);
@@ -125,6 +105,7 @@ namespace Fungus.EditorUtils
                 EditorGUILayout.PropertyField(cycles);
                 EditorGUILayout.PropertyField(randomenddelay);
                 EditorGUILayout.PropertyField(endframedelay);
+                
 
 
             }

@@ -20,7 +20,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Narrative",
                  "PortraitAnim",
-                 "Character frame-by-frame animation using portrait lists. Cycle = Stopping the animation based on how many loops. IMPORTANT! Do not use Dim or any other fancy settings in Stage")]
+                 "Character frame-by-frame animation using portrait lists. Cycle = Stopping the animation based on how many loops. IMPORTANT! Create separate Stage just for this custom comamand and Do not use Dim or any other fancy settings in Stage")]
     public class PortraitAnim : ControlWithDisplay<DisplayType>
     {
         //[HideInInspector] protected DisplayType display = DisplayType.Show;
@@ -90,6 +90,7 @@ namespace Fungus
             {
                 Stage disdim = Stage.GetActiveStage();
                 disdim.GetComponent<Stage>().DimPortraits = false;
+                disdim.GetComponent<Stage>().FadeDuration = 0;
                 sequenceMove();
             }
 
@@ -112,6 +113,7 @@ namespace Fungus
             {
                 if (enableAnimation == actPorAnim.Enable && character != null)
                 {
+                    var arpor = new Sprite[]{portrait1, portrait2, portrait3, portrait4, portrait5};
                     isAnimating = true;
                     PortraitOptions options = new PortraitOptions();
                     var por1 = new Action(() =>
