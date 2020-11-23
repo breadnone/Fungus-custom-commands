@@ -76,6 +76,7 @@ namespace Fungus
         }
         public override void OnEnter()
         {
+            display = DisplayType.Show;
             if (stage == null)
             {
                 stage = Stage.GetActiveStage();
@@ -122,31 +123,27 @@ namespace Fungus
                         options.display = display;
                         stage.RunPortraitCommand(options, Continue);
                     });
-
                     var por2 = new Action(() =>
                     {
                         options.character = character;
                         options.portrait = portrait2;
                         options.display = display;
-                        stage.RunPortraitCommand(options, Continue);
+                        stage.RunPortraitCommand(options, null);
                     });
-
                     var por3 = new Action(() =>
                     {
                         options.character = character;
                         options.portrait = portrait3;
                         options.display = display;
-                        stage.RunPortraitCommand(options, Continue);
+                        stage.RunPortraitCommand(options, null);
                     });
-
                     var por4 = new Action(() =>
                     {
                         options.character = character;
                         options.portrait = portrait4;
                         options.display = display;
-                        stage.RunPortraitCommand(options, Continue);
+                        stage.RunPortraitCommand(options, null);
                     });
-
                     var por5 = new Action(() =>
                     {
                         options.character = character;
@@ -154,9 +151,6 @@ namespace Fungus
                         options.display = display;
                         stage.RunPortraitCommand(options, null);
                     });
-
-                    //Continue();
-
                     while (isAnimating)
                     {
                         por1();
