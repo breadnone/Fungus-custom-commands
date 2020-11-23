@@ -21,16 +21,24 @@ namespace Fungus
     [CommandInfo("Narrative",
                  "PortraitAnim",
                  "Character frame-by-frame animation using portrait lists. Cycle = Stopping the animation based on how many loops. IMPORTANT! Do not use Dim or any other fancy settings in Stage")]
-    public class PortraitAnim : Command
+    public class PortraitAnim : ControlWithDisplay<DisplayType>
     {
-        [HideInInspector] protected DisplayType display = DisplayType.Show;
+        //[HideInInspector] protected DisplayType display = DisplayType.Show;
         [SerializeField] public actPorAnim enableAnimation;
         [Tooltip("Stage to display portrait on")]
         [SerializeField] protected Stage stage;
         [Tooltip("Character to display")]
         [SerializeField] protected Character character;
         [Tooltip("Portrait to display")]
-        [SerializeField] protected Sprite[] portrait1;
+        [SerializeField] protected Sprite portrait1;
+        [Tooltip("Portrait to display")]
+        [SerializeField] protected Sprite portrait2;
+        [Tooltip("Portrait to display")]
+        [SerializeField] protected Sprite portrait3;
+        [Tooltip("Portrait to display")]
+        [SerializeField] protected Sprite portrait4;
+        [Tooltip("Portrait to display")]
+        [SerializeField] protected Sprite portrait5;
         [Tooltip("Delay between sequence")]
         [SerializeField] protected float frameDelay = 0.1f;
         [Tooltip("Reverse the loop after completion of the 1st cycle")]
@@ -55,8 +63,12 @@ namespace Fungus
         /// <summary>
         /// Portrait to display.
         /// </summary>
-        public virtual Sprite[] _Portrait1 { get { return portrait1; } set { portrait1 = value; } }
-        private bool isAnimating = false;
+        public virtual Sprite _Portrait1 { get { return portrait1; } set { portrait1 = value; } }
+        public virtual Sprite _Portrait2 { get { return portrait2; } set { portrait2 = value; } }
+        public virtual Sprite _Portrait3 { get { return portrait3; } set { portrait3 = value; } }
+        public virtual Sprite _Portrait4 { get { return portrait4; } set { portrait4 = value; } }
+        public virtual Sprite _Portrait5 { get { return portrait5; } set { portrait5 = value; } }
+        public bool isAnimating = false;
         private IEnumerator coroutine;
         protected void sequenceMove()
         {
@@ -78,19 +90,7 @@ namespace Fungus
             {
                 Stage disdim = Stage.GetActiveStage();
                 disdim.GetComponent<Stage>().DimPortraits = false;
-
-                for (int i = 0; i < portrait1.Length; i++)
-                {
-                    if (portrait1[i] != null)
-                    {
-                        sequenceMove();
-                    }
-                    else
-                    {
-                        Continue();
-                        return;
-                    }
-                }
+                sequenceMove();
             }
 
             if (enableAnimation == actPorAnim.Disable)
@@ -106,70 +106,110 @@ namespace Fungus
             Continue();
         }
         private static int amCycle = 0;
-        private static int amCycleRes = 0;        
-        public IEnumerator charAnim(float delay)
+        public virtual IEnumerator charAnim(float delay)
         {
-            for (int i = 0; i < portrait1.Length; i++)
+            if (portrait1 && portrait2 && portrait3 && portrait4 && portrait5 != null)
             {
-                if (portrait1[i] != null)
+                if (enableAnimation == actPorAnim.Enable && character != null)
                 {
-                    if (enableAnimation == actPorAnim.Enable && character != null)
-                    {                        
-                        isAnimating = true;
-                        PortraitOptions options = new PortraitOptions();
+                    isAnimating = true;
+                    PortraitOptions options = new PortraitOptions();
+                    var por1 = new Action(() =>
+                    {
                         options.character = character;
-                        options.display = display;                        
-                        while (isAnimating)
-                        {                            
-                            foreach (Sprite jav in portrait1)
-                            {
-                                options.portrait = jav;
-                                stage.RunPortraitCommand(options, Continue);
-                                yield return new WaitForSeconds(frameDelay);
-                            }
-                            
-                            if(reverseLoop)
-                            {
-                                foreach (Sprite jav in portrait1.Reverse())
-                                {
-                                    options.portrait = jav;
-                                    stage.RunPortraitCommand(options, Continue);
-                                    yield return new WaitForSeconds(frameDelay);
-                                }
-                            }
+                        options.portrait = portrait1;
+                        options.display = display;
+                        stage.RunPortraitCommand(options, Continue);
+                    });
 
-                            amCycle++;
-                            var bh = amCycle / portrait1.Length;
-                            amCycleRes = bh;
+                    var por2 = new Action(() =>
+                    {
+                        options.character = character;
+                        options.portrait = portrait2;
+                        options.display = display;
+                        stage.RunPortraitCommand(options, Continue);
+                    });
 
-                            //Debug.Log("amcycle:"+ amCycle + "amcycleres:" + amCycleRes);
+                    var por3 = new Action(() =>
+                    {
+                        options.character = character;
+                        options.portrait = portrait3;
+                        options.display = display;
+                        stage.RunPortraitCommand(options, Continue);
+                    });
 
-                            if (RandomEndDelay)
+                    var por4 = new Action(() =>
+                    {
+                        options.character = character;
+                        options.portrait = portrait4;
+                        options.display = display;
+                        stage.RunPortraitCommand(options, Continue);
+                    });
+
+                    var por5 = new Action(() =>
+                    {
+                        options.character = character;
+                        options.portrait = portrait5;
+                        options.display = display;
+                        stage.RunPortraitCommand(options, null);
+                    });
+
+                    //Continue();
+
+                    while (isAnimating)
+                    {
+                        por1();
+                        yield return new WaitForSeconds(frameDelay);
+                        por2();
+                        yield return new WaitForSeconds(frameDelay);
+                        por3();
+                        yield return new WaitForSeconds(frameDelay);
+                        por4();
+                        yield return new WaitForSeconds(frameDelay);
+                        por5();
+
+                        if(reverseLoop)
+                        {
+                            por5();
+                            yield return new WaitForSeconds(frameDelay);
+                            por4();
+                            yield return new WaitForSeconds(frameDelay);
+                            por3();
+                            yield return new WaitForSeconds(frameDelay);
+                            por2();
+                            yield return new WaitForSeconds(frameDelay);
+                            por1();
+                        }
+                        
+                        amCycle++;                        
+
+                        Debug.Log("amcycle:"+ amCycle);
+
+                        if (RandomEndDelay)
+                        {
+                            yield return new WaitForSeconds(Random.Range(4f, 12f));
+                        }
+                        else
+                        {
+                            yield return new WaitForSeconds(endFrameDelay);
+                        }
+                        if (useCyclesRange)
+                        {
+                            if (amCycle == cycles)
                             {
-                                yield return new WaitForSeconds(Random.Range(4f, 12f));
-                            }
-                            else
-                            {
-                                yield return new WaitForSeconds(endFrameDelay);
-                            }
-                            if (useCyclesRange)
-                            {
-                                if (amCycleRes == cycles)
-                                {
-                                    this.disablePortraitAnim(false);
-                                }
+                                this.disablePortraitAnim(false);
                             }
                         }
-                    }
-                    else
-                    {
-                        Continue();
                     }
                 }
                 else
                 {
                     Continue();
                 }
+            }
+            else
+            {
+                Continue();
             }
         }
         public override string GetSummary()
@@ -178,21 +218,20 @@ namespace Fungus
             {
                 return "Error: No character selected";
             }
-     
+
             string characterSummary = "";
             string portraitSummary = "";
             string stageSummary = "";
 
             characterSummary = character.name;
 
-            for(int i = 0; i < portrait1.Length; i++)
+
+            if (enableAnimation == actPorAnim.Enable && portrait1 && portrait2 && portrait3 && portrait4 && portrait5 == null)
             {
-                if (enableAnimation == actPorAnim.Enable && character != null && portrait1[i] == null)
-                {
-                    return "Error: One of portrait slots cannot be empty";
-                }
+                return "Error: One of portrait slots cannot be empty";
             }
-            return characterSummary + ":" + portraitSummary + ":" +stageSummary;
+
+            return characterSummary + ":" + portraitSummary + ":" + stageSummary;
         }
         public override Color GetButtonColor()
         {
