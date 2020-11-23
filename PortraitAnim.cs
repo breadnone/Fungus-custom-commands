@@ -175,7 +175,7 @@ namespace Fungus
                         
                         amCycle++;                        
 
-                        Debug.Log("amcycle:"+ amCycle);
+                        //Debug.Log("amcycle:"+ amCycle);
 
                         if (RandomEndDelay)
                         {
