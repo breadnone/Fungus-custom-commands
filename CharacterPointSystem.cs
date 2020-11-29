@@ -27,11 +27,6 @@ namespace Fungus
         [SerializeField] protected bool useTextUI = false;
         [Tooltip("If Text component is used, Slider component will be ignored")]
         [SerializeField] protected Text textComponent;
-
-        void Update()
-        {
-
-        }
         #region Public members
         public override void OnEnter()
         { 
@@ -47,11 +42,20 @@ namespace Fungus
 
             // Prepend the current save profile (if any)
             string prefsKey = SetSaveProfile.SaveProfile + "_" + flowchart.SubstituteVariables(key);
-
             System.Type variableType = variable.GetType();
 
             if (variableType == typeof(IntegerVariable))
             {
+                //Safe check
+                if (LeanTween.isTweening(textComponent.gameObject))
+                {
+                    LeanTween.cancel(textComponent.gameObject);
+                }
+                else if(LeanTween.isTweening(slider.gameObject))
+                {
+                    LeanTween.cancel(slider.gameObject);
+                }
+
                 IntegerVariable integerVariable = variable as IntegerVariable;
                 if(textComponent != null && useTextUI == true)
                 {
@@ -61,12 +65,30 @@ namespace Fungus
                 {                    
                     slider.maxValue = maxValueOf;
                     slider.wholeNumbers = true;
-                    slider.value = (float)integerVariable.Value;
+                    //slider.value = (float)integerVariable.Value;
                     //Debug.Log(integerVariable.Value);
+                    var tmpfinttofloat = slider.GetComponent<Slider>().value;
+                    //Debug.Log(tmpfinttofloat);
+                    //float animfloat = 
+                    LeanTween.value(slider.gameObject, tmpfinttofloat, (float)integerVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                    {
+                        slider.value = val;
+                    });
+                    
                 }
             }
             else if (variableType == typeof(FloatVariable))
             {
+                //Safe check
+                if (LeanTween.isTweening(textComponent.gameObject))
+                {
+                    LeanTween.cancel(textComponent.gameObject);
+                }
+                else if(LeanTween.isTweening(slider.gameObject))
+                {
+                    LeanTween.cancel(slider.gameObject);
+                }
+
                 FloatVariable floatVariable = variable as FloatVariable;
                 if(textComponent != null && useTextUI == true)
                 {
@@ -76,11 +98,17 @@ namespace Fungus
                 {                    
                     slider.maxValue = maxValueOf;
                     slider.wholeNumbers = true;
-                    slider.value = floatVariable.Value;
+                    var tmpfinttofloat = slider.GetComponent<Slider>().value;
+                    LeanTween.value(slider.gameObject, tmpfinttofloat, floatVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                    {
+                        slider.value = val;
+                        
+                    });
                     //Debug.Log(floatVariable.Value);
                 }
             }
             Continue();
+            
         }        
         public override string GetSummary()
         {
