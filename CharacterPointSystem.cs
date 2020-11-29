@@ -30,81 +30,82 @@ namespace Fungus
         #region Public members
         public override void OnEnter()
         { 
-            key = variable.name;
-            if (key == "" ||
-                variable == null)
+
+            if(variable != null)
             {
-                Continue();
-                return;
-            }
-
-            var flowchart = GetFlowchart();
-
-            // Prepend the current save profile (if any)
-            string prefsKey = SetSaveProfile.SaveProfile + "_" + flowchart.SubstituteVariables(key);
-            System.Type variableType = variable.GetType();
-
-            if (variableType == typeof(IntegerVariable))
-            {
-                //Safe check
-                if (LeanTween.isTweening(textComponent.gameObject))
+                key = variable.name;
+                if (key == "" ||
+                    variable == null)
                 {
-                    LeanTween.cancel(textComponent.gameObject);
+                    Continue();
+                    return;
                 }
-                else if(LeanTween.isTweening(slider.gameObject))
-                {
-                    LeanTween.cancel(slider.gameObject);
-                }
+                var flowchart = GetFlowchart();
 
-                IntegerVariable integerVariable = variable as IntegerVariable;
-                if(textComponent != null && useTextUI == true)
+                // Prepend the current save profile (if any)
+                string prefsKey = SetSaveProfile.SaveProfile + "_" + flowchart.SubstituteVariables(key);
+                System.Type variableType = variable.GetType();
+
+                if (variableType == typeof(IntegerVariable))
                 {
-                    textComponent.text = integerVariable.Value.ToString();
-                }
-                if(slider != null && useTextUI == false)
-                {                    
-                    slider.maxValue = maxValueOf;
-                    slider.wholeNumbers = true;
-                    //slider.value = (float)integerVariable.Value;
-                    //Debug.Log(integerVariable.Value);
-                    var tmpfinttofloat = slider.GetComponent<Slider>().value;
-                    //Debug.Log(tmpfinttofloat);
-                    //float animfloat = 
-                    LeanTween.value(slider.gameObject, tmpfinttofloat, (float)integerVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                    //Safe check
+                    if (LeanTween.isTweening(textComponent.gameObject))
                     {
-                        slider.value = val;
-                    });
-                    
-                }
-            }
-            else if (variableType == typeof(FloatVariable))
-            {
-                //Safe check
-                if (LeanTween.isTweening(textComponent.gameObject))
-                {
-                    LeanTween.cancel(textComponent.gameObject);
-                }
-                else if(LeanTween.isTweening(slider.gameObject))
-                {
-                    LeanTween.cancel(slider.gameObject);
-                }
-
-                FloatVariable floatVariable = variable as FloatVariable;
-                if(textComponent != null && useTextUI == true)
-                {
-                    textComponent.text = floatVariable.Value.ToString();
-                }
-                if(slider != null && useTextUI == false)
-                {                    
-                    slider.maxValue = maxValueOf;
-                    slider.wholeNumbers = true;
-                    var tmpfinttofloat = slider.GetComponent<Slider>().value;
-                    LeanTween.value(slider.gameObject, tmpfinttofloat, floatVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                        LeanTween.cancel(textComponent.gameObject);
+                    }
+                    else if(LeanTween.isTweening(slider.gameObject))
                     {
-                        slider.value = val;
-                        
-                    });
-                    //Debug.Log(floatVariable.Value);
+                        LeanTween.cancel(slider.gameObject);
+                    }
+
+                    IntegerVariable integerVariable = variable as IntegerVariable;
+                    if(textComponent != null && useTextUI == true)
+                    {
+                        textComponent.text = integerVariable.Value.ToString();
+                    }
+                    if(slider != null && useTextUI == false)
+                    {                    
+                        slider.maxValue = maxValueOf;
+                        slider.wholeNumbers = true;
+                        //slider.value = (float)integerVariable.Value;
+                        //Debug.Log(integerVariable.Value);
+                        var tmpfinttofloat = slider.GetComponent<Slider>().value;
+                        //Debug.Log(tmpfinttofloat);
+                        //float animfloat = 
+                        LeanTween.value(slider.gameObject, tmpfinttofloat, (float)integerVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                        {
+                            slider.value = val;
+                        });
+                    }
+                }
+                else if (variableType == typeof(FloatVariable))
+                {
+                    //Safe check
+                    if (LeanTween.isTweening(textComponent.gameObject))
+                    {
+                        LeanTween.cancel(textComponent.gameObject);
+                    }
+                    else if(LeanTween.isTweening(slider.gameObject))
+                    {
+                        LeanTween.cancel(slider.gameObject);
+                    }
+
+                    FloatVariable floatVariable = variable as FloatVariable;
+                    if(textComponent != null && useTextUI == true)
+                    {
+                        textComponent.text = floatVariable.Value.ToString();
+                    }
+                    if(slider != null && useTextUI == false)
+                    {                    
+                        slider.maxValue = maxValueOf;
+                        slider.wholeNumbers = true;
+                        var tmpfinttofloat = slider.GetComponent<Slider>().value;
+                        LeanTween.value(slider.gameObject, tmpfinttofloat, floatVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                        {
+                            slider.value = val;
+                        });
+                        //Debug.Log(floatVariable.Value);
+                    }
                 }
             }
             Continue();
