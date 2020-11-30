@@ -25,12 +25,12 @@ namespace Fungus
         [SerializeField] protected float maxValueOf;
         [SerializeField] protected Slider slider;
         [SerializeField] protected bool useTextUI = false;
+        [SerializeField] protected bool slowMode = true;
         [Tooltip("If Text component is used, Slider component will be ignored")]
         [SerializeField] protected Text textComponent;
         #region Public members
         public override void OnEnter()
-        { 
-
+        {
             if(variable != null)
             {
                 key = variable.name;
@@ -49,13 +49,22 @@ namespace Fungus
                 if (variableType == typeof(IntegerVariable))
                 {
                     //Safe check
-                    if (LeanTween.isTweening(textComponent.gameObject))
+                    if(slowMode == true)
                     {
-                        LeanTween.cancel(textComponent.gameObject);
-                    }
-                    else if(LeanTween.isTweening(slider.gameObject))
-                    {
-                        LeanTween.cancel(slider.gameObject);
+                        if(textComponent != null)
+                        {
+                            if (LeanTween.isTweening(textComponent.gameObject))
+                            {
+                                LeanTween.cancel(textComponent.gameObject);
+                            }
+                        }
+                        if(slider != null)
+                        {
+                            if(LeanTween.isTweening(slider.gameObject))
+                            {
+                                LeanTween.cancel(slider.gameObject);
+                            }
+                        }                        
                     }
 
                     IntegerVariable integerVariable = variable as IntegerVariable;
@@ -72,22 +81,39 @@ namespace Fungus
                         var tmpfinttofloat = slider.GetComponent<Slider>().value;
                         //Debug.Log(tmpfinttofloat);
                         //float animfloat = 
-                        LeanTween.value(slider.gameObject, tmpfinttofloat, (float)integerVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                        if(slowMode == true)
                         {
-                            slider.value = val;
-                        });
+                            LeanTween.value(slider.gameObject, tmpfinttofloat, (float)integerVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                            {
+                                slider.value = val;
+                            });
+                        }
+                        else
+                        {
+                            slider.value = (float)integerVariable.Value;
+                        }
                     }
                 }
                 else if (variableType == typeof(FloatVariable))
                 {
                     //Safe check
-                    if (LeanTween.isTweening(textComponent.gameObject))
+                    if(slowMode == true)
                     {
-                        LeanTween.cancel(textComponent.gameObject);
-                    }
-                    else if(LeanTween.isTweening(slider.gameObject))
-                    {
-                        LeanTween.cancel(slider.gameObject);
+                        if(textComponent != null)
+                        {
+                            if (LeanTween.isTweening(textComponent.gameObject))
+                            {
+                                LeanTween.cancel(textComponent.gameObject);
+                            }
+                        }
+                        if(slider != null)
+                        {
+                            if(LeanTween.isTweening(slider.gameObject))
+                            {
+                                LeanTween.cancel(slider.gameObject);
+                            }
+                        }
+                        
                     }
 
                     FloatVariable floatVariable = variable as FloatVariable;
@@ -100,16 +126,21 @@ namespace Fungus
                         slider.maxValue = maxValueOf;
                         slider.wholeNumbers = true;
                         var tmpfinttofloat = slider.GetComponent<Slider>().value;
-                        LeanTween.value(slider.gameObject, tmpfinttofloat, floatVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                        if(slowMode == true)
                         {
-                            slider.value = val;
-                        });
-                        //Debug.Log(floatVariable.Value);
+                            LeanTween.value(slider.gameObject, tmpfinttofloat, floatVariable.Value, 0.3f).setEaseInOutQuad().setOnUpdate((float val) =>
+                            {
+                                slider.value = val;
+                            });
+                        }
+                        else
+                        {
+                            slider.value = floatVariable.Value;
+                        }
                     }
                 }
             }
             Continue();
-            
         }        
         public override string GetSummary()
         {
@@ -125,7 +156,7 @@ namespace Fungus
             {
                 return "Error: No Slider component available";
             }
-            return "'" + variable.Key;
+            return variable.Key;
         }
 
         public override Color GetButtonColor()
