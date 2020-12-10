@@ -28,7 +28,9 @@ namespace Fungus
         [SerializeField] public GameObject[] imgSrc;
         [Tooltip("Delay in float")]
         [SerializeField] public float delay = 0.2f;
-        [HideInInspector] protected bool stillTweening = false;
+        [Tooltip("Disable & Set Active to False")]
+        [SerializeField] public bool disableAndHide = true;
+        [SerializeField] protected bool stillTweening = false;
         private IEnumerator coroutine;    
         protected void sequenceMove()
         {
@@ -38,7 +40,11 @@ namespace Fungus
 
         private static int sibIndex = 0;
         private static int avobj = 0;
-        public IEnumerator SequenceOfLines(float seqMove)
+
+        //uncomment this for sprite renderer
+        //float zAxs = 0;
+
+        public virtual IEnumerator SequenceOfLines(float seqMove)
         {
             foreach(GameObject bobo in imgSrc)
             {
@@ -58,15 +64,24 @@ namespace Fungus
                 }
                 stillTweening = true;
                 Continue();
-                while(stillTweening)
+                while(true)
                 {
-                    foreach(GameObject gg in imgSrc)
+                    sibIndex++;
+                    if(stillTweening)
                     {
-                        sibIndex++;
-                        var hh = gg.transform.GetSiblingIndex();
-                        gg.transform.SetSiblingIndex(hh+sibIndex);                                 
-                        yield return new WaitForSeconds(delay);                      
-                    }                    
+                        foreach(GameObject gg in imgSrc)
+                        {
+                            var hh = gg.transform.GetSiblingIndex();
+                            //uncomment this for sprite renderer
+                            //gg.transform.localPosition = new Vector3(1f, 1f, zAxs++);
+                            gg.transform.SetSiblingIndex(hh+sibIndex);                                 
+                            yield return new WaitForSeconds(delay);
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
             else
@@ -74,15 +89,15 @@ namespace Fungus
                 Continue();
             }
         }
-        protected void inStates()
+        public virtual void inStates()
         {
             if (stillTweening == true)
             {
-                for(int i=0; i < imgSrc.Length; i++)
+                if(disableAndHide)
                 {
-                    var imagecol = imgSrc[i];
-                    if(imagecol.activeInHierarchy == true)
+                    for(int i=0; i < imgSrc.Length; i++)
                     {
+                        var imagecol = imgSrc[i];
                         imagecol.SetActive(false);
                     }
                 }
@@ -96,6 +111,8 @@ namespace Fungus
         public virtual void bbbb(bool acstate)
         {
             this.stillTweening = false;
+            avobj = 0;
+            sibIndex = 0;
             this.inStates();
             this.StopAllCoroutines();
         }
@@ -107,9 +124,11 @@ namespace Fungus
                 case (threeFramu.Disable):
                     ThreeFramer threefrm = GetComponent<ThreeFramer>();
                     threefrm.bbbb(false);
+                    //Debug.Log("Disabled");
                     Continue();
                     break;
                 case (threeFramu.Enable):
+                    //Debug.Log("Enabled");
                     sequenceMove();
                     break;
             }
