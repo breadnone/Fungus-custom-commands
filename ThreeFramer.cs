@@ -30,9 +30,8 @@ namespace Fungus
         protected static GameObject[] imgSrcc;
         [Tooltip("Delay in float")]
         [SerializeField] public float delay = 0.1f;
-
+        public static bool insStatesIsRunning = false;
         public static bool stillTweening = false;
-        protected bool allActive = false;
         public static bool StillTweening { get { return stillTweening; } set { stillTweening = value; } }
         private static int sibIndex = 0;
         //uncomment this for sprite renderer
@@ -56,15 +55,17 @@ namespace Fungus
                 for (int j = 0; j < imgSrc.Length; j++)
                 {
                     if (imgSrc[j] != null)
-                    {                        
+                    {
+                        stillTweening = true;
+                        insStatesIsRunning = true;
                         imgSrc[j].SetActive(true);
                         yield return 0;
-                        allActive = true;
-                        StartCoroutine(loopAnim());
+                        ThreeFramer.GetInstance().StartCoroutine(loopAnim());
                     }
                     else
                     {
-                        stillTweening = false;
+                        ThreeFramer.stillTweening = false;
+                        ThreeFramer.insStatesIsRunning = false;
                         yield break;
                     }
                 }
@@ -73,7 +74,7 @@ namespace Fungus
 
         protected IEnumerator loopAnim()
         {
-            stillTweening = true;
+            //stillTweening = true;
             while (true)
             {
                 if (stillTweening == true)
@@ -87,39 +88,41 @@ namespace Fungus
                         gg.transform.SetSiblingIndex(hh + sibIndex++);
                     }
                 }
-                if (stillTweening == false)
+                else
                 {
-                    StartCoroutine(InStates());
-                    yield break;
+                    if(!insStatesIsRunning)
+                    {
+                        ThreeFramer.insStatesIsRunning = true;
+                        InStates();
+                        Debug.Log("stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck ");
+                        yield break;
+                    }
                 }
             }
         }
-        protected IEnumerator InStates()
-        {            
+        public void InStates()
+        {
             for (int i = 0; i < imgSrc.Length; i++)
             {
                 if (imgSrc[i] != null && imgSrc[i].activeInHierarchy == true)
                 {
                     imgSrc[i].SetActive(false);
-                    yield return 0;
-                    allActive = false;
                 }
-            }            
-            if(stillTweening == false && allActive == false)
-            {                
-                yield return new WaitForSeconds(.1f);
-                StopAllCoroutines();
             }
+            ThreeFramer.stillTweening = false;
+            ThreeFramer.GetInstance().StopAllCoroutines();
         }
         #region Public members
         public override Color GetButtonColor()
         {
             return new Color32(221, 184, 169, 255);
         }
-        public void GetThreeFramer(bool acstate)
+        public static void GetThreeFramer(bool acstate)
         {
             sibIndex = 0;
-            stillTweening = acstate;            
+            ThreeFramer.stillTweening = acstate;
+            ThreeFramer.insStatesIsRunning = acstate;
+            Debug.Log("GetThreFramer Executed GetThreFramer Executed GetThreFramer Executed GetThreFramer Executed ");
         }
 
         public override void OnEnter()
@@ -128,16 +131,14 @@ namespace Fungus
             switch (splashSelect)
             {
                 case (threeFramu.Disable):
-                    GetThreeFramer(false);
+                    ThreeFramer.GetThreeFramer(false);
                     break;
                 case (threeFramu.Enable):
                     //ThreeFramer.GetInstance().GetThreeFramer(true);
                     ThreeFramer.GetInstance().StartCoroutine(GetSequence());
                     break;
             }
-
             Continue();
-
         }
 
         public override void OnCommandAdded(Block parentBlock)
