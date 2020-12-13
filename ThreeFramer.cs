@@ -21,86 +21,94 @@ namespace Fungus
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class ThreeFramer : Command
-    {        
+    {
+        private static ThreeFramer instance;
         [Tooltip("Enable")]
         [SerializeField] public threeFramu splashSelect;
         [Tooltip("Images")]
-        [SerializeField] public GameObject[] imgSrc;
+        [SerializeField] public GameObject[] imgSrc = new GameObject[0];
+        protected static GameObject[] imgSrcc;
         [Tooltip("Delay in float")]
-        [SerializeField] public float delay = 0.2f;
-        [Tooltip("Disable & Set Active to False")]
-        [SerializeField] public bool disableAndHide = true;
-        [SerializeField] protected bool stillTweening = false;
-        private IEnumerator coroutine;    
-        protected void sequenceMove()
-        {
-            coroutine = SequenceOfLines(0.2f);
-            StartCoroutine(coroutine);
-        }
+        [SerializeField] public float delay = 0.1f;
 
+        public static bool stillTweening = false;
+        protected bool allActive = false;
+        public static bool StillTweening { get { return stillTweening; } set { stillTweening = value; } }
         private static int sibIndex = 0;
-        private static int avobj = 0;
-
         //uncomment this for sprite renderer
         //float zAxs = 0;
-
-        public virtual IEnumerator SequenceOfLines(float seqMove)
+        public static ThreeFramer GetInstance()
         {
-            foreach(GameObject bobo in imgSrc)
+            if (instance == null)
             {
-                if(bobo != null)
-                {
-                    avobj++;
-                }
+                instance = new ThreeFramer();
             }
-            if(imgSrc.Length > 0 && stillTweening == false && avobj == imgSrc.Length)
+            return instance;
+        }
+        void Awake()
+        {
+            instance = this;
+        }
+        protected IEnumerator GetSequence()
+        {
+            if (splashSelect == threeFramu.Enable && stillTweening == false)
             {
-                for(int j=0; j < imgSrc.Length; j++)
-                {    
-                    if(imgSrc[j].activeInHierarchy == false)
-                    {
-                        imgSrc[j].SetActive(true);
-                    }
-                }
-                stillTweening = true;
-                Continue();
-                while(true)
+                for (int j = 0; j < imgSrc.Length; j++)
                 {
-                    sibIndex++;
-                    if(stillTweening)
-                    {
-                        foreach(GameObject gg in imgSrc)
-                        {
-                            var hh = gg.transform.GetSiblingIndex();
-                            //uncomment this for sprite renderer
-                            //gg.transform.localPosition = new Vector3(1f, 1f, zAxs++);
-                            gg.transform.SetSiblingIndex(hh+sibIndex);                                 
-                            yield return new WaitForSeconds(delay);
-                        }
+                    if (imgSrc[j] != null)
+                    {                        
+                        imgSrc[j].SetActive(true);
+                        yield return 0;
+                        allActive = true;
+                        StartCoroutine(loopAnim());
                     }
                     else
                     {
-                        break;
+                        stillTweening = false;
+                        yield break;
                     }
                 }
-            }
-            else
-            {
-                Continue();
             }
         }
-        public virtual void inStates()
+
+        protected IEnumerator loopAnim()
         {
-            if (stillTweening == true)
+            stillTweening = true;
+            while (true)
             {
-                if(disableAndHide)
+                if (stillTweening == true)
                 {
-                    for(int i=0; i < imgSrc.Length; i++)
+                    foreach (GameObject gg in imgSrc)
                     {
-                        var imagecol = imgSrc[i];
-                        imagecol.SetActive(false);
+                        int hh = gg.transform.GetSiblingIndex();
+                        yield return new WaitForSeconds(0.1f);
+                        //uncomment this for sprite renderer
+                        //gg.transform.localPosition = new Vector3(1f, 1f, zAxs++);                        
+                        gg.transform.SetSiblingIndex(hh + sibIndex++);
                     }
                 }
+                if (stillTweening == false)
+                {
+                    StartCoroutine(InStates());
+                    yield break;
+                }
+            }
+        }
+        protected IEnumerator InStates()
+        {            
+            for (int i = 0; i < imgSrc.Length; i++)
+            {
+                if (imgSrc[i] != null && imgSrc[i].activeInHierarchy == true)
+                {
+                    imgSrc[i].SetActive(false);
+                    yield return 0;
+                    allActive = false;
+                }
+            }            
+            if(stillTweening == false && allActive == false)
+            {                
+                yield return new WaitForSeconds(.1f);
+                StopAllCoroutines();
             }
         }
         #region Public members
@@ -108,31 +116,30 @@ namespace Fungus
         {
             return new Color32(221, 184, 169, 255);
         }
-        public virtual void bbbb(bool acstate)
+        public void GetThreeFramer(bool acstate)
         {
-            this.stillTweening = false;
-            avobj = 0;
             sibIndex = 0;
-            this.inStates();
-            this.StopAllCoroutines();
+            stillTweening = acstate;            
         }
+
         public override void OnEnter()
         {
-            Canvas.ForceUpdateCanvases();
+            //Canvas.ForceUpdateCanvases();
             switch (splashSelect)
             {
                 case (threeFramu.Disable):
-                    ThreeFramer threefrm = GetComponent<ThreeFramer>();
-                    threefrm.bbbb(false);
-                    //Debug.Log("Disabled");
-                    Continue();
+                    GetThreeFramer(false);
                     break;
                 case (threeFramu.Enable):
-                    //Debug.Log("Enabled");
-                    sequenceMove();
+                    //ThreeFramer.GetInstance().GetThreeFramer(true);
+                    ThreeFramer.GetInstance().StartCoroutine(GetSequence());
                     break;
             }
+
+            Continue();
+
         }
+
         public override void OnCommandAdded(Block parentBlock)
         {
             splashSelect = threeFramu.Disable;
