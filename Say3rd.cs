@@ -3,20 +3,21 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace Fungus
 {
     /// <summary>
     /// Writes text in a dialog box.
     /// </summary>
-    [CommandInfo("Narrative", 
-                 "Say 3rd Person", 
+    [CommandInfo("Narrative",
+                 "Say 3rd Person",
                  "Add extra functionality for 3rd person speaker/narrator. Must be Text component.")]
     [AddComponentMenu("")]
     public class Say3rd : Command, ILocalizable
     {
         // Removed this tooltip as users's reported it obscures the text box
-        [TextArea(5,10)]
+        [TextArea(5, 10)]
         [SerializeField] protected string storyText = "";
 
         [Tooltip("Notes about this story text for other authors, localization, etc.")]
@@ -30,22 +31,16 @@ namespace Fungus
 
         [Tooltip("Voiceover audio to play when writing the text")]
         [SerializeField] protected AudioClip voiceOverClip;
-
         [Tooltip("Always show this Say text when the command is executed multiple times")]
         [SerializeField] protected bool showAlways = true;
-
         [Tooltip("Number of times to show this Say text when the command is executed multiple times")]
         [SerializeField] protected int showCount = 1;
-
         [Tooltip("Type this text in the previous dialog box.")]
         [SerializeField] protected bool extendPrevious = false;
-
         [Tooltip("Fade out the dialog box when writing has finished and not waiting for input.")]
         [SerializeField] protected bool fadeWhenDone = true;
-
         [Tooltip("Wait for player to click before continuing.")]
         [SerializeField] protected bool waitForClick = true;
-
         [Tooltip("Stop playing voiceover when text finishes writing.")]
         [SerializeField] protected bool stopVoiceover = true;
 
@@ -56,8 +51,12 @@ namespace Fungus
 
         [Tooltip("Sets the active Say dialog with a reference to a Say Dialog object in the scene. All story text will now display using this Say Dialog.")]
         [SerializeField] protected SayDialog setSayDialog;
+        [Tooltip("3rd person speaker")]
         [TextArea] public string narrator = "";
-        public Text textComponent;
+        [Tooltip("3rd person speaker Text component")]
+        [SerializeField] protected Text textComponent;
+        [Tooltip("Input pause for the text component to show before it dissapears again")]
+        [SerializeField] protected float inputPause = 3f;
 
         protected int executionCount;
 
@@ -80,21 +79,6 @@ namespace Fungus
 
         public override void OnEnter()
         {
-            if(textComponent && narrator != null)
-            {
-                LeanTween.value(textComponent.gameObject, 0f, 1f, 0.3f).setOnUpdate((float val) =>
-                {
-                    textComponent.text = narrator.ToString();
-                    Text sr = textComponent.GetComponent<Text>();
-                    Color newColor = sr.color;
-                    newColor.a = val;
-                    sr.color = newColor;
-                    //textComponent.GetComponent<Text>().enabled = true;
-                    
-                });
-
-                
-            }
             if (!showAlways && executionCount >= showCount)
             {
                 Continue();
@@ -120,11 +104,10 @@ namespace Fungus
                 Continue();
                 return;
             }
-    
+
             var flowchart = GetFlowchart();
 
             sayDialog.SetActive(true);
-            
             sayDialog.SetCharacter(character);
             sayDialog.SetCharacterImage(portrait);
 
@@ -141,17 +124,42 @@ namespace Fungus
                 }
             }
 
+            StartCoroutine(thirdPerson());
+
             string subbedText = flowchart.SubstituteVariables(displayText);
 
-            sayDialog.Say(subbedText, !extendPrevious, waitForClick, fadeWhenDone, stopVoiceover, waitForVO, voiceOverClip, delegate {
+            sayDialog.Say(subbedText, !extendPrevious, waitForClick, fadeWhenDone, stopVoiceover, waitForVO, voiceOverClip, delegate
+            {                
                 Continue();
             });
+        }
+
+        protected IEnumerator thirdPerson()
+        {
+            SayDialog sayDialog = SayDialog.GetSayDialog();
+            sayDialog.GetComponent<DialogInput>().enabled = false;
+            
+            if (textComponent != null && narrator != "")
+            {
+                LeanTween.value(textComponent.gameObject, 0f, 1f, 0.5f).setOnUpdate((float val) =>
+                {
+                    textComponent.text = narrator;
+                    Text sr = textComponent.GetComponent<Text>();
+                    Color newColor = sr.color;
+                    newColor.a = val;
+                    sr.color = newColor;
+                });
+
+                yield return new WaitForSeconds(3f);
+                textComponent.text = "";
+                sayDialog.GetComponent<DialogInput>().enabled = true;
+            }
         }
 
         public override string GetSummary()
         {
             string namePrefix = "";
-            if (character != null) 
+            if (character != null)
             {
                 namePrefix = character.NameText + ": ";
             }
@@ -201,7 +209,7 @@ namespace Fungus
         {
             return description;
         }
-        
+
         public virtual string GetStringId()
         {
             // String id for Say commands is SAY.<Localization Id>.<Command id>.[Character Name]
