@@ -59,7 +59,7 @@ namespace Fungus
                         stillTweening = true;
                         insStatesIsRunning = true;
                         imgSrc[j].SetActive(true);
-                        yield return 0;
+                        yield return null;
                         ThreeFramer.GetInstance().StartCoroutine(loopAnim());
                     }
                     else
@@ -94,7 +94,6 @@ namespace Fungus
                     {
                         ThreeFramer.insStatesIsRunning = true;
                         InStates();
-                        Debug.Log("stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck stuck ");
                         yield break;
                     }
                 }
@@ -122,7 +121,6 @@ namespace Fungus
             sibIndex = 0;
             ThreeFramer.stillTweening = acstate;
             ThreeFramer.insStatesIsRunning = acstate;
-            Debug.Log("GetThreFramer Executed GetThreFramer Executed GetThreFramer Executed GetThreFramer Executed ");
         }
 
         public override void OnEnter()
