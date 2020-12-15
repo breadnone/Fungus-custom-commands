@@ -16,5 +16,6 @@ twoDeffects - Fake 2D particle system
 PortraitAnim - Character frame-by-frame animation utilizing the portraits list(use Enable & Disable to activate and deactivate)  
 Making a character blinking, noding or moving in general pretty much easier.
 Access from code : PortraitAnim varname = GetComponent<PortraitAnim>(); varname.disablePortraitAnim(false);  
+Note: You must copy the PortraitAnimEditor to Editor folder!  
 <hr>  
 Say3rd - Say command with 3rd person functionality
