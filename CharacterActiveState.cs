@@ -65,7 +65,7 @@ namespace Fungus
         public virtual Stage _Stage { get { return stage; } }
         [Tooltip("Stop Tweening on character")]
         [HideInInspector] protected LTDescr ourTween;
-        protected RectTransform cachePos;
+        protected Vector3 cachePos;
         protected Vector3 cacheSiz;
 
         protected virtual void OnTweenComplete()
@@ -101,7 +101,7 @@ namespace Fungus
         // Super Happy expression
         protected void SuperHappySpeakingPortraits(Character character)
         {
-            var defPos = character.State.position;
+            var defPos = character.State.portraitImage.transform.position;
             cachePos = defPos;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
@@ -114,7 +114,7 @@ namespace Fungus
                     () =>
                     {
                         //LeanTween.moveY(character.State.portraitImage.rectTransform, 0f, 0f);      
-                        character.State.position = cachePos;                  
+                        character.State.portraitImage.transform.position = cachePos;                  
                         character.State.portraitImage.color = Color.white;
                         OnTweenComplete();
                     }
@@ -130,7 +130,7 @@ namespace Fungus
         // Happy expression
         protected void HappySpeakingPortraits(Character character)
         {
-            var defPos = character.State.position;
+            var defPos = character.State.portraitImage.transform.position;
             cachePos = defPos;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
@@ -141,7 +141,7 @@ namespace Fungus
                     LeanTween.moveY(character.State.portraitImage.rectTransform, 100f, 0.2f).setEaseInQuad().setLoopPingPong(2).setOnComplete(
                     () =>
                     {
-                        character.State.position = cachePos;
+                        character.State.portraitImage.transform.position = cachePos;
                         //LeanTween.moveY(character.State.portraitImage.rectTransform, 0f, 0f);
                         OnTweenComplete();
                     }
@@ -294,7 +294,7 @@ namespace Fungus
         //Panic animation to character
         protected void PanicSpeakingPortraits(Character character)
         {
-            var defPos = character.State.position;
+            var defPos = character.State.portraitImage.transform.position;
             cachePos = defPos;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
@@ -305,7 +305,7 @@ namespace Fungus
                     LeanTween.moveX(character.State.portraitImage.rectTransform, 100f, 0.2f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
                     () =>
                     {
-                        character.State.position = cachePos;
+                        character.State.portraitImage.transform.position = cachePos;
                         OnTweenComplete();
                     }
                 );
