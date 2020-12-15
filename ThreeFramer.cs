@@ -29,7 +29,6 @@ namespace Fungus
         [SerializeField] public GameObject[] imgSrc = new GameObject[0];
         protected static GameObject[] imgSrcc;
         [Tooltip("Delay in float")]
-        [SerializeField] public float delay = 0.1f;
         public static bool insStatesIsRunning = false;
         public static bool stillTweening = false;
         public static bool StillTweening { get { return stillTweening; } set { stillTweening = value; } }
@@ -59,8 +58,10 @@ namespace Fungus
                         stillTweening = true;
                         insStatesIsRunning = true;
                         imgSrc[j].SetActive(true);
-                        yield return null;
-                        ThreeFramer.GetInstance().StartCoroutine(loopAnim());
+                        if(imgSrc[j].activeInHierarchy == true)
+                        {
+                            ThreeFramer.GetInstance().StartCoroutine(loopAnim());
+                        }
                     }
                     else
                     {
@@ -89,27 +90,27 @@ namespace Fungus
                     }
                 }
                 else
-                {
+                {                    
                     if(!insStatesIsRunning)
                     {
-                        ThreeFramer.insStatesIsRunning = true;
                         InStates();
                         yield break;
                     }
                 }
             }
         }
-        public void InStates()
+        protected void InStates()
         {
+            ThreeFramer.insStatesIsRunning = true;
             for (int i = 0; i < imgSrc.Length; i++)
             {
-                if (imgSrc[i] != null && imgSrc[i].activeInHierarchy == true)
+                if (imgSrc[i] != null)
                 {
                     imgSrc[i].SetActive(false);
                 }
             }
-            ThreeFramer.stillTweening = false;
             ThreeFramer.GetInstance().StopAllCoroutines();
+            
         }
         #region Public members
         public override Color GetButtonColor()
@@ -125,14 +126,13 @@ namespace Fungus
 
         public override void OnEnter()
         {
-            //Canvas.ForceUpdateCanvases();
+            Canvas.ForceUpdateCanvases();
             switch (splashSelect)
             {
                 case (threeFramu.Disable):
                     ThreeFramer.GetThreeFramer(false);
                     break;
                 case (threeFramu.Enable):
-                    //ThreeFramer.GetInstance().GetThreeFramer(true);
                     ThreeFramer.GetInstance().StartCoroutine(GetSequence());
                     break;
             }

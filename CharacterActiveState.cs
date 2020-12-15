@@ -57,7 +57,6 @@ namespace Fungus
     {
         [Tooltip("Applies animation to active/non-active charracters")]
         [SerializeField] protected Character character;
-        [HideInInspector] public Image characterImage;
         [SerializeField] protected bool waitUntilFinished = false;
         [HideInInspector] protected bool useDefaultSettings = true;
         public virtual bool UseDefaultSettings { get { return useDefaultSettings; } }
@@ -68,7 +67,8 @@ namespace Fungus
         [Tooltip("Stop Tweening on character")]
         protected static Character speakingCharacter;
         [HideInInspector] protected LTDescr ourTween;
-        private static RectTransform cachePos;
+        protected RectTransform cachePos;
+        protected Vector3 cacheSiz;
         public virtual string NameText
         {
             get
@@ -173,6 +173,8 @@ namespace Fungus
         // Wobble animation
         protected void StretchBounceSpeakingPortraits(Character character)
         {
+            var defSiz = character.State.portraitImage.transform.localScale;
+            cacheSiz = defSiz;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
             {
@@ -183,8 +185,7 @@ namespace Fungus
                     () =>
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
-                        var newCharr = character.State.portraitImage;
-                        newCharr.transform.localScale = new Vector3(1, 1, 1);
+                        character.State.portraitImage.transform.localScale = cacheSiz;
                         OnTweenComplete();
                     }
                 );
@@ -200,6 +201,8 @@ namespace Fungus
         // Sinking down animation
         protected void SinkSpeakingPortraits(Character character)
         {
+            var defSiz = character.State.portraitImage.transform.localScale;
+            cacheSiz = defSiz;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
             {
@@ -210,8 +213,7 @@ namespace Fungus
                     () =>
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
-                        var newCharr = character.State.portraitImage;
-                        newCharr.transform.localScale = new Vector3(1, 1, 1);
+                        character.State.portraitImage.transform.localScale = cacheSiz;
                         OnTweenComplete();
                     }
                 );
@@ -227,6 +229,8 @@ namespace Fungus
         // Zoom In animation
         protected void ZoomInSpeakingPortraits(Character character)
         {
+            var defSiz = character.State.portraitImage.transform.localScale;
+            cacheSiz = defSiz;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
             {
@@ -237,8 +241,7 @@ namespace Fungus
                     () =>
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
-                        var newCharr = character.State.portraitImage;
-                        newCharr.transform.localScale = new Vector3(1, 1, 1);
+                        character.State.portraitImage.transform.localScale = cacheSiz;
                         OnTweenComplete();
                     }
                 );
@@ -254,6 +257,8 @@ namespace Fungus
         // Zoom In + Color animation
         protected void ZoomInColorSpeakingPortraits(Character character)
         {
+            var defSiz = character.State.portraitImage.transform.localScale;
+            cacheSiz = defSiz;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
             {
@@ -265,8 +270,7 @@ namespace Fungus
                     () =>
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
-                        var newCharr = character.State.portraitImage;
-                        newCharr.transform.localScale = new Vector3(1, 1, 1);
+                        character.State.portraitImage.transform.localScale = cacheSiz;
                         character.State.portraitImage.color = Color.white;
                         OnTweenComplete();
                     }
@@ -283,6 +287,8 @@ namespace Fungus
         // Stretch Wobble with color animation
         protected void StretchWobbleColorizeSpeakingPortraits(Character character)
         {
+            var defSiz = character.State.portraitImage.transform.localScale;
+            cacheSiz = defSiz;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
             {
@@ -294,8 +300,7 @@ namespace Fungus
                     () =>
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
-                        var newCharr = character.State.portraitImage;
-                        newCharr.transform.localScale = new Vector3(1, 1, 1);
+                        character.State.portraitImage.transform.localScale = cacheSiz;
                         character.State.portraitImage.color = Color.white;
                         //LeanTween.color(character.State.portraitImage.rectTransform, Color.white, 0.1f);
                         OnTweenComplete();
