@@ -67,14 +67,19 @@ namespace Fungus
         [HideInInspector] protected LTDescr ourTween;
         protected Vector3 cachePos;
         protected Vector3 cacheSiz;
-
-        protected virtual void OnTweenComplete()
+        //Make sure they're done tweening. This won't be affected even if user spam clicks
+        protected virtual void OnComplete() 
         {
-            Continue();
+            if (waitUntilFinished)
+            {
+                Continue();
+            }
         }
         // Rotates character's sprite
         protected void FlipSpeakingPortraits(Character character)
-        {            
+        {
+            var defPos = character.State.portraitImage.transform.localScale;
+            cachePos = cacheSiz;
             var activeStages = Stage.ActiveStages;
             for (int i = 0; i < activeStages.Count; i++)
             {
@@ -86,16 +91,13 @@ namespace Fungus
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
                         var newCharr = character.State.portraitImage;
-                        newCharr.transform.localScale = new Vector3(1, 1, 1);
-                        OnTweenComplete();
+                        newCharr.transform.localScale = cachePos;
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();                
-            }
+
         }
 
         // Super Happy expression
@@ -116,16 +118,13 @@ namespace Fungus
                         //LeanTween.moveY(character.State.portraitImage.rectTransform, 0f, 0f);      
                         character.State.portraitImage.transform.position = cachePos;                  
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
 
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();
-            }
+
         }
         // Happy expression
         protected void HappySpeakingPortraits(Character character)
@@ -143,17 +142,13 @@ namespace Fungus
                     {
                         character.State.portraitImage.transform.position = cachePos;
                         //LeanTween.moveY(character.State.portraitImage.rectTransform, 0f, 0f);
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
-            }
-            if (waitUntilFinished)
-            {
 
-                Continue();
-                
             }
+
         }
         // Wobble animation
         protected void StretchBounceSpeakingPortraits(Character character)
@@ -171,15 +166,12 @@ namespace Fungus
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
                         character.State.portraitImage.transform.localScale = cacheSiz;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();
-            }
+
         }
         // Sinking down animation
         protected void SinkSpeakingPortraits(Character character)
@@ -197,15 +189,12 @@ namespace Fungus
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
                         character.State.portraitImage.transform.localScale = cacheSiz;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();
-            }
+
         }
         // Zoom In animation
         protected void ZoomInSpeakingPortraits(Character character)
@@ -223,15 +212,12 @@ namespace Fungus
                     {
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
                         character.State.portraitImage.transform.localScale = cacheSiz;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();
-            }
+
         }
         // Zoom In + Color animation
         protected void ZoomInColorSpeakingPortraits(Character character)
@@ -251,15 +237,12 @@ namespace Fungus
                         //LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0.1f).setDelay(0.3f);
                         character.State.portraitImage.transform.localScale = cacheSiz;
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();
-            }
+
         }
         // Stretch Wobble with color animation
         protected void StretchWobbleColorizeSpeakingPortraits(Character character)
@@ -280,15 +263,12 @@ namespace Fungus
                         character.State.portraitImage.transform.localScale = cacheSiz;
                         character.State.portraitImage.color = Color.white;
                         //LeanTween.color(character.State.portraitImage.rectTransform, Color.white, 0.1f);
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();
-            }
+
         }
 
         //Panic animation to character
@@ -306,15 +286,12 @@ namespace Fungus
                     () =>
                     {
                         character.State.portraitImage.transform.position = cachePos;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
             }
-            if (waitUntilFinished)
-            {
-                Continue();                
-            }
+
         }
         // Mad expression
         protected void Mad2SpeakingPortraits(Character character)
@@ -329,7 +306,7 @@ namespace Fungus
                     () =>
                     {
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
@@ -353,7 +330,7 @@ namespace Fungus
                     () =>
                     {
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
@@ -375,8 +352,8 @@ namespace Fungus
                     LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.1f).setLoopPingPong(3).setEase(LeanTweenType.linear).setDelay(0.1f).setOnComplete(
                     () =>
                     {
-                        LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f).setDelay(0.3f);
-                        OnTweenComplete();
+                        LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f);
+                        OnComplete();
                     }
                 );
                 }
@@ -399,7 +376,7 @@ namespace Fungus
                     () =>
                     {
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
@@ -422,7 +399,7 @@ namespace Fungus
                     () =>
                     {
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
@@ -445,7 +422,7 @@ namespace Fungus
                     () =>
                     {
                         character.State.portraitImage.color = Color.white;
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
@@ -468,7 +445,7 @@ namespace Fungus
                     () =>
                     {
                         LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f).setDelay(0.2f);
-                        OnTweenComplete();
+                        OnComplete();
                     }
                 );
                 }
@@ -568,10 +545,7 @@ namespace Fungus
             }
             if (!waitUntilFinished)
             {
-                if (ourTween != null)
-                {
-                    ourTween.setOnComplete(OnTweenComplete);
-                }
+                Continue();
             }
         }
         public override string GetSummary()
