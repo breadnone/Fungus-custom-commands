@@ -6,7 +6,6 @@ using UnityEngine.Serialization;
 using System.Collections;
 using System;
 using UnityEngine.UI;
-using System.Linq;
 
 namespace Fungus
 {
@@ -25,6 +24,7 @@ namespace Fungus
         {
             public GameObject gamobjects;
             public bool activeStates;
+            public float delay = 0;
         }
         [SerializeField] public BulkDrop[] _targetGameObject = new BulkDrop[1];
         private IEnumerator coroutine;
@@ -41,18 +41,23 @@ namespace Fungus
             {
                 if (_targetGameObject[i].activeStates == true && _targetGameObject[i].gamobjects != null)
                 {
-                    _targetGameObject[i].gamobjects.SetActive(true);
-                    //wait for next frame
-                    yield return new WaitForEndOfFrame();
+                    //Delay after each iteration.
+                    if (i % 1 == 0)
+                    {
+                        _targetGameObject[i].gamobjects.SetActive(true);
+                        yield return new WaitForSeconds(_targetGameObject[i].delay);
+                    }
                 }
 
                 if (_targetGameObject[i].activeStates == false && _targetGameObject[i].gamobjects != null)
                 {
-                    _targetGameObject[i].gamobjects.SetActive(false);
-                    //wait for next frame
-                    yield return new WaitForEndOfFrame();
+                    //Delay after each iteration.
+                    if (i % 1 == 0)
+                    {
+                        _targetGameObject[i].gamobjects.SetActive(false);
+                        yield return new WaitForSeconds(_targetGameObject[i].delay);
+                    }
                 }
-
             }
         }
 
