@@ -71,7 +71,6 @@ namespace Fungus
         protected virtual void OnTweenComplete()
         {
             Continue();
-            StopAllCoroutines();
         }
         // Rotates character's sprite
         protected void FlipSpeakingPortraits(Character character)
