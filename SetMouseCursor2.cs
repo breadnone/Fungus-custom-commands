@@ -31,35 +31,38 @@ namespace Fungus
         protected static Vector2 activeHotspot;
         protected static Texture2D activeCursorTexture2;
         protected static Vector2 activeHotspot2;
-        protected float delayInput = 0;
         protected bool clicked = false;
         #region Public members
-
         public static void ResetMouseCursor()
         {
             // Change mouse cursor back to most recent settings
             Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
             Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
         }
-
         void Update()
         {
             if (Input.GetMouseButtonDown(0))
             {
-                StartCoroutine(clicking());
+                if(!clicked)
+                {
+                    StartCoroutine(clicking());
+                }
             } 
         }
         public IEnumerator clicking()
         {
+            clicked = true;
             Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.3f);
             BeforeClicking();
-
         }
+        
         public void BeforeClicking()
         {
             Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
+            clicked = false;
         }
+        
 
         public override void OnEnter()
         {
@@ -71,6 +74,7 @@ namespace Fungus
             activeHotspot2 = hotSpot2;
             Continue();
         }
+        
 
         public override string GetSummary()
         {
