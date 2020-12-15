@@ -33,20 +33,7 @@ namespace Fungus
         public static bool stillTweening = false;
         public static bool StillTweening { get { return stillTweening; } set { stillTweening = value; } }
         private static int sibIndex = 0;
-        //uncomment this for sprite renderer
-        //float zAxs = 0;
-        public static ThreeFramer GetInstance()
-        {
-            if (instance == null)
-            {
-                instance = new ThreeFramer();
-            }
-            return instance;
-        }
-        void Awake()
-        {
-            instance = this;
-        }
+
         protected IEnumerator GetSequence()
         {
             if (splashSelect == threeFramu.Enable && stillTweening == false)
@@ -57,10 +44,15 @@ namespace Fungus
                     {
                         stillTweening = true;
                         insStatesIsRunning = true;
-                        imgSrc[j].SetActive(true);
+                        //Start on next frame after each iteration, just to be safe.
+                        if (j % 1 == 0)
+                        {
+                            imgSrc[j].SetActive(true);
+                            yield return new WaitForEndOfFrame();
+                        }
                         if(imgSrc[j].activeInHierarchy == true)
                         {
-                            ThreeFramer.GetInstance().StartCoroutine(loopAnim());
+                            StartCoroutine(loopAnim());
                         }
                     }
                     else
@@ -78,39 +70,39 @@ namespace Fungus
             //stillTweening = true;
             while (true)
             {
-                if (stillTweening == true)
+                if (insStatesIsRunning == true && stillTweening == true)
                 {
                     foreach (GameObject gg in imgSrc)
                     {
                         int hh = gg.transform.GetSiblingIndex();
-                        yield return new WaitForSeconds(0.1f);
-                        //uncomment this for sprite renderer
-                        //gg.transform.localPosition = new Vector3(1f, 1f, zAxs++);                        
+                        yield return new WaitForSeconds(0.1f);                   
                         gg.transform.SetSiblingIndex(hh + sibIndex++);
                     }
-                }
+                }                
                 else
-                {                    
-                    if(!insStatesIsRunning)
-                    {
-                        InStates();
-                        yield break;
-                    }
+                {
+                    InStates();
+                    yield break;
                 }
             }
         }
         protected void InStates()
         {
-            ThreeFramer.insStatesIsRunning = true;
             for (int i = 0; i < imgSrc.Length; i++)
             {
                 if (imgSrc[i] != null)
                 {
-                    imgSrc[i].SetActive(false);
+                    if (i % 1 == 0)
+                    {
+                        imgSrc[i].SetActive(false);
+                    }
+                }
+
+                if(imgSrc[i].activeInHierarchy == true)
+                {
+                    StopAllCoroutines();
                 }
             }
-            ThreeFramer.GetInstance().StopAllCoroutines();
-            
         }
         #region Public members
         public override Color GetButtonColor()
@@ -130,10 +122,10 @@ namespace Fungus
             switch (splashSelect)
             {
                 case (threeFramu.Disable):
-                    ThreeFramer.GetThreeFramer(false);
+                    GetThreeFramer(false);
                     break;
                 case (threeFramu.Enable):
-                    ThreeFramer.GetInstance().StartCoroutine(GetSequence());
+                    StartCoroutine(GetSequence());
                     break;
             }
             Continue();
