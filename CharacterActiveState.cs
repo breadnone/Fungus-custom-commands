@@ -60,26 +60,14 @@ namespace Fungus
         [SerializeField] protected bool waitUntilFinished = false;
         [HideInInspector] protected bool useDefaultSettings = true;
         public virtual bool UseDefaultSettings { get { return useDefaultSettings; } }
-        protected TextAdapter nameTextAdapter = new TextAdapter();
         [Tooltip("Stage to display characters on")]
         [SerializeField] protected Stage stage;
         public virtual Stage _Stage { get { return stage; } }
         [Tooltip("Stop Tweening on character")]
-        protected static Character speakingCharacter;
         [HideInInspector] protected LTDescr ourTween;
         protected RectTransform cachePos;
         protected Vector3 cacheSiz;
-        public virtual string NameText
-        {
-            get
-            {
-                return nameTextAdapter.Text;
-            }
-            set
-            {
-                nameTextAdapter.Text = value;
-            }
-        }
+
         protected virtual void OnTweenComplete()
         {
             Continue();
@@ -137,9 +125,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Happy expression
@@ -193,9 +179,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Sinking down animation
@@ -221,9 +205,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Zoom In animation
@@ -249,9 +231,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Zoom In + Color animation
@@ -279,9 +259,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Stretch Wobble with color animation
@@ -310,9 +288,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
 
@@ -361,9 +337,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Mad expression
@@ -387,9 +361,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Shock expression
@@ -412,9 +384,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Aqua Color
@@ -437,9 +407,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Pink color
@@ -462,9 +430,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Cyan color
@@ -487,9 +453,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         // Clear color
@@ -512,9 +476,7 @@ namespace Fungus
             }
             if (waitUntilFinished)
             {
-
                 Continue();
-                
             }
         }
         public override void OnEnter()
@@ -549,7 +511,6 @@ namespace Fungus
                         return;
                     }
                 }
-                StopAllCoroutines();
                 Continue();
             }
             // Selected "use default effect"
