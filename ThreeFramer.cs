@@ -2,9 +2,8 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
-using System;
+using System.Collections.Generic;
 namespace Fungus
 {
     public enum threeFramu
@@ -28,11 +27,13 @@ namespace Fungus
         [Tooltip("Images")]
         [SerializeField] public GameObject[] imgSrc = new GameObject[0];
         protected static GameObject[] imgSrcc;
-        [Tooltip("Delay in float")]
+        public static bool allDone = false;
         public static bool insStatesIsRunning = false;
         public static bool stillTweening = false;
         public static bool StillTweening { get { return stillTweening; } set { stillTweening = value; } }
         private static int sibIndex = 0;
+        //Cache SiblingIndex
+        protected static List<int> cacheIndex = new List<int>();
 
         protected IEnumerator GetSequence()
         {
@@ -40,15 +41,19 @@ namespace Fungus
             {
                 for (int j = 0; j < imgSrc.Length; j++)
                 {
+                    //Cache SiblingIndex to List
+                    var b = transform.GetSiblingIndex();
+                    cacheIndex.Add(b);
+                    //Debug.Log(cacheIndex[j].name);
                     if (imgSrc[j] != null)
                     {
                         stillTweening = true;
-                        insStatesIsRunning = true;
+
                         //Start on next frame after each iteration, just to be safe.
                         if (j % 1 == 0)
                         {
                             imgSrc[j].SetActive(true);
-                            yield return new WaitForEndOfFrame();
+                            yield return null;
                         }
                         if(imgSrc[j].activeInHierarchy == true)
                         {
@@ -57,8 +62,7 @@ namespace Fungus
                     }
                     else
                     {
-                        ThreeFramer.stillTweening = false;
-                        ThreeFramer.insStatesIsRunning = false;
+                        stillTweening = false;
                         yield break;
                     }
                 }
@@ -68,17 +72,17 @@ namespace Fungus
         protected IEnumerator loopAnim()
         {
             //stillTweening = true;
-            while (true)
+            while (allDone == false)
             {
-                if (insStatesIsRunning == true && stillTweening == true)
+                if (stillTweening == true)
                 {
                     foreach (GameObject gg in imgSrc)
                     {
                         int hh = gg.transform.GetSiblingIndex();
-                        yield return new WaitForSeconds(0.1f);                   
+                        yield return new WaitForSeconds(0.1f);
                         gg.transform.SetSiblingIndex(hh + sibIndex++);
                     }
-                }                
+                }
                 else
                 {
                     InStates();
@@ -90,19 +94,16 @@ namespace Fungus
         {
             for (int i = 0; i < imgSrc.Length; i++)
             {
-                if (imgSrc[i] != null)
+                imgSrc[i].SetActive(false);
+                for(int j = 0; j < cacheIndex.Count; j++)
                 {
-                    if (i % 1 == 0)
-                    {
-                        imgSrc[i].SetActive(false);
-                    }
-                }
-
-                if(imgSrc[i].activeInHierarchy == true)
-                {
-                    StopAllCoroutines();
+                    //Make sure they are back to it's original order in the hierarchy
+                    //This prevents wrong sequence if the same images used at a later time in the same scene
+                    imgSrc[i].transform.SetSiblingIndex(cacheIndex[j]);
                 }
             }
+            StopAllCoroutines();
+            cacheIndex = new List<int>();
         }
         #region Public members
         public override Color GetButtonColor()
@@ -112,8 +113,8 @@ namespace Fungus
         public static void GetThreeFramer(bool acstate)
         {
             sibIndex = 0;
-            ThreeFramer.stillTweening = acstate;
-            ThreeFramer.insStatesIsRunning = acstate;
+            stillTweening = acstate;
+            insStatesIsRunning = acstate;
         }
 
         public override void OnEnter()
