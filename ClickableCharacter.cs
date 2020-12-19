@@ -32,11 +32,11 @@ namespace Fungus
     /// Tween sequence
     /// </summary>
     [CommandInfo("Sprite",
-                 "Clickable Character2",
+                 "Clickable Character",
                  "Adds ability for character to be clickable with the use of BoxCollider and Raycast. This won'r follow character's movements nor animations. To update it's position you must create new one. Note: Offset: 0 : 0 means center.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class ClickableCharacter2 : Command
+    public class ClickableCharacter : Command
     {
         [Tooltip("Enable")]
         [SerializeField] public clicChar2 status;
