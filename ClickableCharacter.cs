@@ -18,7 +18,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Sprite",
                  "Clickable Character",
-                 "Adds ability for character to be clickable with the use of buttons. Yes, you're not reading it wrong :)")]
+                 "Adds ability for character to be clickable with the use of buttons. Yes, you heard me right :)")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class ClickableCharacter : Command
@@ -33,30 +33,22 @@ namespace Fungus
         [SerializeField] protected Button rectButton2;
         [SerializeField] protected GameObject ifRectButton2Clicked;
         [SerializeField] protected GameObject canvas;
-        [SerializeField] protected bool characterHolderAsParent = true;
+        [SerializeField] protected bool characterHolderAsParent = false;
         [SerializeField] protected bool enableDebugLog = false;
-        [SerializeField] protected float upperRegionHeight = 1.4f;
-        [SerializeField] protected float upperRegionOffset = -2f;
-        [SerializeField] protected float centerRegionHeight = 1.4f;
-        [SerializeField] protected float centerRegionOffset = -1f;
-        [SerializeField] protected float lowerRegionHeight = 1.4f;
-        [SerializeField] protected float lowerRegionOffset = -0.5f;
+        [SerializeField] protected float upperRegionHeight = 2f;
+        [SerializeField] protected float upperRegionOffset = -3f;
+        [SerializeField] protected float centerRegionHeight = 2f;
+        [SerializeField] protected float centerRegionOffset = -1.5f;
+        [SerializeField] protected float lowerRegionHeight = 2f;
+        [SerializeField] protected float lowerRegionOffset = 0f;
+        [Header("REFERENCE RESOLUTION")]
+        [SerializeField] protected float ResWidth = 1920f;
+        [SerializeField] protected float ResHeight = 1080f;
         protected Canvas nCanvas;
         public static bool actives = false;
         WaitForSeconds waiting = new WaitForSeconds(0.2f);
         WaitForSeconds waitDestroy = new WaitForSeconds(0.2f);
-        public void DummyTrigger0()
-        {
-            StartCoroutine(GetClickedCharacter0());
-        }
-        public void DummyTrigger1()
-        {
-            StartCoroutine(GetClickedCharacter1());
-        }
-        public void DummyTrigger2()
-        {
-            StartCoroutine(GetClickedCharacter2());
-        }
+
         protected void crCanvas()
         {
             //Instantiate default canvas as parent
@@ -76,6 +68,7 @@ namespace Fungus
             myCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             myCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             myCanvasScaler.matchWidthOrHeight = 0.5f;
+            myCanvasScaler.referenceResolution = new Vector2(ResWidth, ResHeight);
             myGO.AddComponent<GraphicRaycaster>();
             myGraphicRaycaster = myGO.GetComponent<GraphicRaycaster>();
             myGraphicRaycaster.blockingObjects = GraphicRaycaster.BlockingObjects.All;
@@ -95,7 +88,7 @@ namespace Fungus
             {
                 if (rectButton0 && rectButton1 && rectButton2 != null)
                 {
-                if(character.State.portraitImage == null)
+                    if(character.State.portraitImage == null)
                     {
                         Debug.Log("Portrait has not been spwaned yet!");
                         return;
@@ -110,6 +103,7 @@ namespace Fungus
                     }
                     */
                     crCanvas();
+                    Continue();
 
                     //The maths
                     var charSizX = character.State.portraitImage.rectTransform.rect.x;
@@ -144,10 +138,36 @@ namespace Fungus
                     rectButton2.transform.position = new Vector2(character.State.portraitImage.transform.position.x, rectButton0.transform.position.y + getRectX / 3 * upperRegionOffset);
 
                     //Add listeners
-                    rectButton0.onClick.AddListener(DummyTrigger0);
-                    rectButton1.onClick.AddListener(DummyTrigger1);
-                    rectButton2.onClick.AddListener(DummyTrigger2);
+                    rectButton0.onClick.AddListener(() => buttonCallBack(rectButton0));
+                    rectButton1.onClick.AddListener(() => buttonCallBack(rectButton1));
+                    rectButton2.onClick.AddListener(() => buttonCallBack(rectButton2));
                 }
+                else if(rectButton0 && rectButton1 && rectButton2 != null)
+                {
+                    if(status == clicChar.Enable)
+                    {
+                        Continue();
+                        return;
+                    }
+                }
+            }
+        }
+        //Button callbakcs
+        private void buttonCallBack(Button buttonPressed)
+        {
+            if (buttonPressed == rectButton0)
+            {
+                StartCoroutine(GetClickedCharacter0());
+            }
+
+            if (buttonPressed == rectButton1)
+            {
+                StartCoroutine(GetClickedCharacter1());
+            }
+
+            if (buttonPressed == rectButton2)
+            {
+                StartCoroutine(GetClickedCharacter2());
             }
         }
 
@@ -211,23 +231,6 @@ namespace Fungus
                 ifRectButton2Clicked.SetActive(true);
             }
         }
-        //Collider solution here
-        /*       protected void CharLogic()
-                {   
-                    if(character != null)
-                    {
-                        if(character.GetComponent<BoxCollider2D>() != null)
-                        {
-                            Ray ray = cameras.ScreenPointToRay(Input.mousePosition);
-                            RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction, Mathf.Infinity);
-                            if (hit)
-                            {
-                                Debug.Log ("CLICKING ON CHARACTER");
-                            }
-                        }
-                    }
-                }
-        */
 
         #region Public members
         public override Color GetButtonColor()
@@ -241,6 +244,7 @@ namespace Fungus
             string noBtn0 = "";
             string noBtn1 = "";
             string noBtn2 = "";
+            string noCan = "";
             if (character == null)
             {
                 noCol = "Error: No Character is selected";
@@ -257,12 +261,13 @@ namespace Fungus
             {
                 noBtn2 = "Error: null Button2";
             }
-            return noCol + ":" + noBtn0 + ":" + noBtn1 + ":" + noBtn2;
+            return noCol + ":" + noBtn0 + ":" + noBtn1 + ":" + noBtn2  + ":" + noCan;
         }
         public override void OnEnter()
         {
             //Force 1st frame update
             Canvas.ForceUpdateCanvases();
+
             switch (status)
             {
                 case (clicChar.Disable):
@@ -280,7 +285,10 @@ namespace Fungus
                     }
                     break;
             }
-            Continue();
+            if(status == clicChar.Disable)
+            {
+                Continue();
+            }
         }
 
         public override void OnCommandAdded(Block parentBlock)
