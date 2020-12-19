@@ -5,295 +5,312 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using System.Linq;
+using UnityEngine.Events;
+using System;
+
 namespace Fungus
 {
-    public enum clicChar
+    public enum clicChar2
     {
         Enable,
         Disable
+    }
+    public enum InvokeTypeClick
+    {
+        /// <summary> Call a method with an optional constant value parameter. </summary>
+        Static,         // 
+        /// <summary> Call a method with an optional boolean constant / variable parameter. </summary>
+        DynamicBoolean,
+        /// <summary> Call a method with an optional integer constant / variable parameter. </summary>
+        DynamicInteger,
+        /// <summary> Call a method with an optional float constant / variable parameter. </summary>
+        DynamicFloat,
+        /// <summary> Call a method with an optional string constant / variable parameter. </summary>
+        DynamicString
     }
     /// <summary>
     /// Tween sequence
     /// </summary>
     [CommandInfo("Sprite",
-                 "Clickable Character",
-                 "Adds ability for character to be clickable with the use of buttons. Yes, you heard me right :)")]
+                 "Clickable Character2",
+                 "Adds ability for character to be clickable with the use of BoxCollider and Raycast. This won'r follow character's movements nor animations. To update it's position you must create new one. Note: Offset: 0 : 0 means center.")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
-    public class ClickableCharacter : Command
+    public class ClickableCharacter2 : Command
     {
         [Tooltip("Enable")]
-        [SerializeField] public clicChar status;
+        [SerializeField] public clicChar2 status;
         [SerializeField] protected Character character;
-        [SerializeField] protected Button rectButton0;
-        [SerializeField] protected GameObject ifRectButton0Clicked;
-        [SerializeField] protected Button rectButton1;
-        [SerializeField] protected GameObject ifRectButton1Clicked;
-        [SerializeField] protected Button rectButton2;
-        [SerializeField] protected GameObject ifRectButton2Clicked;
-        [SerializeField] protected GameObject canvas;
-        [SerializeField] protected bool characterHolderAsParent = false;
+        [SerializeField] protected Camera mainCam;
+        [SerializeField] protected Vector2 hitBoxSize = new Vector2(13f, 28f);
+        [SerializeField] protected Vector2 offsets = new Vector2(0, 0);
         [SerializeField] protected bool enableDebugLog = false;
-        [SerializeField] protected float upperRegionHeight = 2f;
-        [SerializeField] protected float upperRegionOffset = -3f;
-        [SerializeField] protected float centerRegionHeight = 2f;
-        [SerializeField] protected float centerRegionOffset = -1.5f;
-        [SerializeField] protected float lowerRegionHeight = 2f;
-        [SerializeField] protected float lowerRegionOffset = 0f;
-        [Header("REFERENCE RESOLUTION")]
-        [SerializeField] protected float ResWidth = 1920f;
-        [SerializeField] protected float ResHeight = 1080f;
-        protected Canvas nCanvas;
-        public static bool actives = false;
-        WaitForSeconds waiting = new WaitForSeconds(0.2f);
-        WaitForSeconds waitDestroy = new WaitForSeconds(0.2f);
 
-        protected void crCanvas()
+        [Header("Execute When Clicked")]
+        [Tooltip("A description of what this command does. Appears in the command summary.")]
+        [SerializeField] protected string description = "";
+        [Tooltip("Selects type of method parameter to pass")]
+        [SerializeField] protected InvokeTypeClick invokeType;
+        [Tooltip("Delay (in seconds) before the methods will be called")]
+        [SerializeField] protected float delay;
+
+        [Tooltip("List of methods to call. Supports methods with no parameters or exactly one string, int, float or object parameter.")]
+        [SerializeField] protected UnityEvent staticEvent = new UnityEvent();
+
+        [Tooltip("Boolean parameter to pass to the invoked methods.")]
+        [SerializeField] protected BooleanData booleanParameter;
+
+        [Tooltip("List of methods to call. Supports methods with one boolean parameter.")]
+        [SerializeField] protected BooleanEvent booleanEvent = new BooleanEvent();
+
+        [Tooltip("Integer parameter to pass to the invoked methods.")]
+        [SerializeField] protected IntegerData integerParameter;
+        
+        [Tooltip("List of methods to call. Supports methods with one integer parameter.")]
+        [SerializeField] protected IntegerEvent integerEvent = new IntegerEvent();
+
+        [Tooltip("Float parameter to pass to the invoked methods.")]
+        [SerializeField] protected FloatData floatParameter;
+        
+        [Tooltip("List of methods to call. Supports methods with one float parameter.")]
+        [SerializeField] protected FloatEvent floatEvent = new FloatEvent();
+
+        [Tooltip("String parameter to pass to the invoked methods.")]
+        [SerializeField] protected StringDataMulti stringParameter;
+
+        [Tooltip("List of methods to call. Supports methods with one string parameter.")]
+        [SerializeField] protected StringEvent stringEvent = new StringEvent();
+        protected Stage stage;
+        protected virtual void DoInvoke()
         {
-            //Instantiate default canvas as parent
-            Canvas myCanvas;
-            CanvasScaler myCanvasScaler;
-            CanvasGroup myCanvasGroup;
-            GraphicRaycaster myGraphicRaycaster;
-            GameObject myGO = new GameObject("stvphtwod-fclickable" + "_" + character.name);
-            myGO.AddComponent<Canvas>();
-            myCanvas = myGO.GetComponent<Canvas>();
-            myCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            //myCanvas.worldCamera = mainCamera;
-            myCanvas.pixelPerfect = false;
-            myCanvas.sortingOrder = 99;
-            myGO.AddComponent<CanvasScaler>();
-            myCanvasScaler = myGO.GetComponent<CanvasScaler>();
-            myCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            myCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            myCanvasScaler.matchWidthOrHeight = 0.5f;
-            myCanvasScaler.referenceResolution = new Vector2(ResWidth, ResHeight);
-            myGO.AddComponent<GraphicRaycaster>();
-            myGraphicRaycaster = myGO.GetComponent<GraphicRaycaster>();
-            myGraphicRaycaster.blockingObjects = GraphicRaycaster.BlockingObjects.All;
-
-            myGO.AddComponent<CanvasGroup>();
-            myCanvasGroup = myGO.GetComponent<CanvasGroup>();
-            myCanvasGroup.interactable = true;
-            myCanvasGroup.blocksRaycasts = true;
-            myCanvasGroup.ignoreParentGroups = true;
-
-            nCanvas = myCanvas.GetComponent<Canvas>();
-        }
-
-        protected void ClickableCharacters()
-        {
-            if(canvas != null)
+            switch (invokeType)
             {
-                if (rectButton0 && rectButton1 && rectButton2 != null)
-                {
-                    if(character.State.portraitImage == null)
-                    {
-                        Debug.Log("Portrait has not been spwaned yet!");
-                        return;
-                    }
-                    canvas.SetActive(true);
-                    /*
-                    if(ifRectButton0Clicked && ifRectButton1Clicked && ifRectButton2Clicked != null)
-                    {
-                        ifRectButton0Clicked.SetActive(false);
-                        ifRectButton1Clicked.SetActive(false);
-                        ifRectButton2Clicked.SetActive(false);
-                    }
-                    */
-                    crCanvas();
-                    Continue();
-
-                    //The maths
-                    var charSizX = character.State.portraitImage.rectTransform.rect.x;
-                    var charSizY = character.State.portraitImage.rectTransform.rect.y / 3;
-                    var charPosX = character.State.portraitImage.transform.position.x;
-                    var charPosY = character.State.portraitImage.transform.position.y;
-                    var charPos = new Vector2(charPosX, charPosY);
-                    var scaleSpwn = new Vector2(charSizX, charSizY / 3);
-                    var spwn = new Vector2(charPosX, charPosY);
-
-                    //Set parent
-                    rectButton0.transform.SetParent(nCanvas.transform, false);
-                    rectButton1.transform.SetParent(nCanvas.transform, false);
-                    rectButton2.transform.SetParent(nCanvas.transform, false);
-                    
-                    if(characterHolderAsParent)
-                    {
-                        //This option is for others with weird setups
-                        nCanvas.transform.SetParent(character.State.holder, false);
-                    }
-
-                    //getting the rectTransform value of the character sprites during runtime is necessary, incase the original was modified
-                    var getRectX = character.State.portraitImage.rectTransform.rect.x;
-
-                    rectButton0.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(charSizX, getRectX / lowerRegionHeight);
-                    rectButton1.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(charSizX, getRectX / centerRegionHeight);
-                    rectButton2.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(charSizX, getRectX / upperRegionHeight);
-
-                    //Always pivoting to first button
-                    rectButton0.transform.position = new Vector2(character.State.portraitImage.transform.position.x, getRectX / 3 * lowerRegionOffset);
-                    rectButton1.transform.position = new Vector2(character.State.portraitImage.transform.position.x, rectButton0.transform.position.y + getRectX / 3 * centerRegionOffset);
-                    rectButton2.transform.position = new Vector2(character.State.portraitImage.transform.position.x, rectButton0.transform.position.y + getRectX / 3 * upperRegionOffset);
-
-                    //Add listeners
-                    rectButton0.onClick.AddListener(() => buttonCallBack(rectButton0));
-                    rectButton1.onClick.AddListener(() => buttonCallBack(rectButton1));
-                    rectButton2.onClick.AddListener(() => buttonCallBack(rectButton2));
-                }
-                else if(rectButton0 && rectButton1 && rectButton2 != null)
-                {
-                    if(status == clicChar.Enable)
-                    {
-                        Continue();
-                        return;
-                    }
-                }
+                default:
+                case InvokeTypeClick.Static:
+                    staticEvent.Invoke();
+                    break;
+                case InvokeTypeClick.DynamicBoolean:
+                    booleanEvent.Invoke(booleanParameter.Value);
+                    break;
+                case InvokeTypeClick.DynamicInteger:
+                    integerEvent.Invoke(integerParameter.Value);
+                    break;
+                case InvokeTypeClick.DynamicFloat:
+                    floatEvent.Invoke(floatParameter.Value);
+                    break;
+                case InvokeTypeClick.DynamicString:
+                    stringEvent.Invoke(stringParameter.Value);
+                    break;
             }
         }
-        //Button callbakcs
-        private void buttonCallBack(Button buttonPressed)
-        {
-            if (buttonPressed == rectButton0)
-            {
-                StartCoroutine(GetClickedCharacter0());
-            }
-
-            if (buttonPressed == rectButton1)
-            {
-                StartCoroutine(GetClickedCharacter1());
-            }
-
-            if (buttonPressed == rectButton2)
-            {
-                StartCoroutine(GetClickedCharacter2());
-            }
-        }
-
-        public IEnumerator DisableClickable()
-        {
-            var dObjects = Resources.FindObjectsOfTypeAll<Canvas>().Where(obj => obj.name == "stvphtwod-fclickable" + "_" + character.name);
-
-            rectButton0.transform.SetParent(canvas.transform, false);
-            rectButton1.transform.SetParent(canvas.transform, false);
-            rectButton2.transform.SetParent(canvas.transform, false);
-            if(canvas != null)
-            {
-                canvas.SetActive(false);
-            }
-            yield return waitDestroy;
-            foreach (Canvas clone in dObjects)
-            {
-                GameObject.Destroy(clone.gameObject);
-            }
-        }
-        //Lower Region
-        public IEnumerator GetClickedCharacter0()
-        {
-            //prevent click spams
-            if(enableDebugLog)
-            {
-                Debug.Log("Bottom region was clicked!");
-            }
-            yield return waiting;
-            if(ifRectButton0Clicked != null)
-            {
-                ifRectButton0Clicked.SetActive(true);
-            }
-            this.StopAllCoroutines();
-        }
-        //Center Region
-        public IEnumerator GetClickedCharacter1()
-        {
-            //prevent click spams
-            if(enableDebugLog)
-            {
-                Debug.Log("Center region was clicked!");
-            }
-            yield return waiting;
-            if(ifRectButton1Clicked != null)
-            {
-                ifRectButton1Clicked.SetActive(true);
-            }
-        }
-        //Upper Region
-        public IEnumerator GetClickedCharacter2()
-        {
-            //prevent click spams
-            if(enableDebugLog)
-            {
-                Debug.Log("Upper region was clicked!");
-            }
-            yield return waiting;
-            if(ifRectButton2Clicked != null)
-            {
-                ifRectButton2Clicked.SetActive(true);
-            }
-        }
-
+        protected Vector2 charPos;
+        protected string cacheChar;
+        protected bool actives = false;
+        protected float xx;
+        protected float yy;
+        
         #region Public members
-        public override Color GetButtonColor()
+        [Serializable] public class BooleanEvent : UnityEvent<bool> {}
+        [Serializable] public class IntegerEvent : UnityEvent<int> {}
+        [Serializable] public class FloatEvent : UnityEvent<float> {}
+        [Serializable] public class StringEvent : UnityEvent<string> {}
+        void Update()
         {
-            return new Color32(221, 184, 169, 255);
+            if(actives)
+            {
+                if(character != null && mainCam != null)
+                {
+                    if(character.State.portraitImage.name != cacheChar)
+                    {
+                        cacheChar = character.State.portraitImage.name;
+                    }
+                    if ( Input.GetMouseButtonDown (0))
+                    {
+                        CastRay();
+                    }
+                }
+            }
+        }
+        protected void CastRay()
+        {
+            Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction, Mathf.Infinity);
+            if (hit) 
+            {
+                if(enableDebugLog)
+                {
+                    Debug.Log ("This gameObject was clicked :" + hit.collider.gameObject.name);
+                }
+                
+                //Invoke starts here!
+                if (Mathf.Approximately(delay, 0f))
+                {
+                    DoInvoke();
+                }
+                else
+                {
+                    Invoke("DoInvoke", delay);
+                }
+            }
+        }
+
+        protected void DisableClickableCharacter()
+        {
+            if (character != null)
+            {
+                if(!actives)
+                {
+                    for (int i = character.transform.childCount - 1; i >= 0; i--)
+                    {
+                        GameObject.Destroy(character.transform.GetChild(i).gameObject);
+                    }
+                    actives = false;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+//This kinda problematic if user spammed clicks! Disabled for now
+/*        
+        protected void UpdateColliderPosition()
+        {
+            //Get the actuall postion on screen
+            //Ray ray = mainCam.ScreenPointToRay(new Vector3(character.State.portraitImage.transform.position.x, character.State.portraitImage.transform.position.y));
+            //RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction, Mathf.Infinity);
+            //Vector2 vv = ray.origin;
+            //var b = character.gameObject.GetComponentInChildren<BoxCollider2D>();
+            //b.offset = vv;
+            
+        }
+*/
+        protected void AddCollider()
+        {
+            if(character != null  && mainCam != null)
+            {
+                BoxCollider2D boxy;
+                float rectX = character.State.portraitImage.rectTransform.sizeDelta.x;
+                float rectY = character.State.portraitImage.rectTransform.sizeDelta.y;
+                GameObject myGO = new GameObject("stvphtwod-fclickable" + "_" + character.name);
+                myGO.AddComponent<BoxCollider2D>();
+                boxy = myGO.GetComponent<BoxCollider2D>();
+                boxy.transform.SetParent(character.transform, false);
+                boxy.size = hitBoxSize;
+                boxy.offset = offsets;
+                
+            }
+
+
+        }
+
+        protected void UpdateStage()
+        {
+            if (stage == null)           
+            {
+                // If no default specified, try to get any portrait stage in the scene
+                stage = FindObjectOfType<Stage>();
+
+                // If portrait stage does not exist, do nothing
+                if (stage == null)
+                {
+                    Continue();
+                    return;
+                }
+            }
         }
 
         public override string GetSummary()
         {
             string noCol = "";
-            string noBtn0 = "";
-            string noBtn1 = "";
-            string noBtn2 = "";
-            string noCan = "";
-            if (character == null)
+            string noCam = "";
+            if(status == clicChar2.Enable)
             {
-                noCol = "Error: No Character is selected";
+                if (character == null)
+                {
+                    noCol = "Error: No Character is selected";
+                }
+            
+                if (mainCam == null)
+                {
+                    noCam = "Error: No active camera is selected";
+                }
             }
-            if (rectButton0 == null && status == clicChar.Enable)
+            if(status == clicChar2.Disable)
             {
-                noBtn0 = "Error: null Button0";
+                if (character == null)
+                {
+                    noCol = "Error: No Character selected to be disabled";
+                }
             }
-            if (rectButton1 == null && status == clicChar.Enable)
+            return noCol + " : " + noCam;
+
+
+            if (!string.IsNullOrEmpty(description))
             {
-                noBtn1 = "Error: null Button1";
+                return description;
             }
-            if (rectButton2 == null && status == clicChar.Enable)
+
+            string summary = invokeType.ToString() + " ";
+
+            switch (invokeType)
             {
-                noBtn2 = "Error: null Button2";
+            default:
+            case InvokeTypeClick.Static:
+                summary += staticEvent.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick.DynamicBoolean:
+                summary += booleanEvent.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick.DynamicInteger:
+                summary += integerEvent.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick.DynamicFloat:
+                summary += floatEvent.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick.DynamicString:
+                summary += stringEvent.GetPersistentEventCount();
+                break;
             }
-            return noCol + ":" + noBtn0 + ":" + noBtn1 + ":" + noBtn2  + ":" + noCan;
+
+            return summary + " methods";
         }
         public override void OnEnter()
         {
+            
             //Force 1st frame update
             Canvas.ForceUpdateCanvases();
-
+            UpdateStage();
             switch (status)
             {
-                case (clicChar.Disable):
-                    StartCoroutine(DisableClickable());
-                    actives = false;
-                    break;
-                case (clicChar.Enable):
-                    if (rectButton0 && rectButton1 && rectButton2 != null)
-                    {
-                        if(canvas != null)
-                        {
-                            ClickableCharacters();
-                            actives = true;
-                        }
-                    }
-                    break;
+                case (clicChar2.Disable):
+
+                    DisableClickableCharacter();
+
+                break;
+                case (clicChar2.Enable):
+
+                    actives = true;
+                    AddCollider();
+                break;
             }
-            if(status == clicChar.Disable)
-            {
-                Continue();
-            }
+            Continue();            
+        }
+        public override Color GetButtonColor()
+        {
+            return new Color32(221, 184, 169, 255);
+        }
+        public override bool HasReference(Variable variable)
+        {
+            return booleanParameter.booleanRef == variable || integerParameter.integerRef == variable ||
+                floatParameter.floatRef == variable || stringParameter.stringRef == variable ||
+                base.HasReference(variable);
         }
 
         public override void OnCommandAdded(Block parentBlock)
         {
-            status = clicChar.Disable;
+            status = clicChar2.Disable;
         }
         #endregion
     }
