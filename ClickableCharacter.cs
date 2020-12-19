@@ -118,16 +118,23 @@ namespace Fungus
         {
             if(actives)
             {
-                if(character != null && mainCam != null)
+                if(character.State.portraitImage != null)
                 {
-                    if(character.State.portraitImage.name != cacheChar)
+                    if(character != null && mainCam != null)
                     {
-                        cacheChar = character.State.portraitImage.name;
+                        if(character.State.portraitImage.name != cacheChar)
+                        {
+                            cacheChar = character.State.portraitImage.name;
+                        }
+                        if ( Input.GetMouseButtonDown (0))
+                        {
+                            CastRay();
+                        }
                     }
-                    if ( Input.GetMouseButtonDown (0))
-                    {
-                        CastRay();
-                    }
+                }
+                else
+                {
+                    Debug.Log("Character's portrait has not been spawned yet! Make sure it exist before this command");
                 }
             }
         }
