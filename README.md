@@ -2,6 +2,10 @@
 <hr>
 BaloonDialog -  Baloon Thoughts/Dialog like in anime/manga  
 <hr>
+Clickable Character  
+Copy ClickableCharacterEditor.cs to Editor folder  
+Copy ClickableCharacter.cs to your Assets folder
+<hr>  
 CartoonEffects - 2D animation effects  
 <hr>
 PauseScreen - Pause command  
