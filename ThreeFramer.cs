@@ -4,7 +4,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System;
 namespace Fungus
 {
     public enum threeFramu
@@ -27,12 +27,10 @@ namespace Fungus
         [SerializeField] public threeFramu splashSelect;
         [Tooltip("Images")]
         [SerializeField] public GameObject[] imgSrc = new GameObject[0];
-        protected static bool allDone = false;
-        protected static bool stillTweening = false;
+        public static bool allDone = false;
+        public static bool stillTweening = false;
         [Tooltip("Ping pong/reverse loop style")]
         [SerializeField] protected bool pingPongLoop = true;
-        [Tooltip("Random delay after animation has been completely animated")]
-        [SerializeField] protected float[] randomValues = new float[0];
         private static int sibIndex = 0;
         //Cache SiblingIndex
         protected static List<int> cacheIndex = new List<int>();
@@ -49,6 +47,7 @@ namespace Fungus
                     if (imgSrc[j] != null)
                     {
                         stillTweening = true;
+                        allDone = false;
                         imgSrc[j].SetActive(true);
 
                         if(imgSrc[j].activeInHierarchy == true)
@@ -66,9 +65,9 @@ namespace Fungus
 
         protected IEnumerator loopAnim()
         {            
-            while (allDone == false)
+            while (!allDone)
             {
-                if (stillTweening == true)
+                if (stillTweening)
                 {
                     for(int i = 0; i < imgSrc.Length; i++)
                     {
@@ -92,29 +91,13 @@ namespace Fungus
                             }
                         }
                     }
-                    //Rendom delay
-                    if(randomValues != null)
-                    {
-                        for(int i = 0; i < randomValues.Length; i++)
-                        {
-                            if(randomValues[i] >= 0)
-                            {
-                                //Randomness
-                                yield return new WaitForSeconds(randomValues[i]);
-                            }
-                        }
-                    }
                 }
                 else
                 {
-                    InStates();
-                    yield break;
+                    break;
                 }
             }
-        }
-        protected void InStates()
-        {
-            Canvas.ForceUpdateCanvases();
+
             for (int i = 0; i < imgSrc.Length; i++)
             {
                 imgSrc[i].SetActive(false);
@@ -125,9 +108,17 @@ namespace Fungus
                     imgSrc[i].transform.SetSiblingIndex(cacheIndex[j]);
                 }
             }
-            StopCoroutine(loopAnim());
-            cacheIndex = new List<int>();
+
+            InStates();
         }
+        protected void InStates()
+        {
+            //Sanity check            
+            cacheIndex = new List<int>();
+            allDone = true;
+            //Debug.Log("This was checked! 01");
+        }
+
         #region Public members
         public override Color GetButtonColor()
         {
@@ -138,8 +129,24 @@ namespace Fungus
             sibIndex = 0;
             stillTweening = acstate;
         }
+        public IEnumerator lastWait()
+        {
+            while (true)
+            {
+                if(!allDone)
+                {
+                    yield return null;
+                }
+                else 
+                {
+                    StopAllCoroutines();
+                    Continue();
+                    yield break;
+                }
+            }
+        } 
 
-        public override void OnEnter()
+        public override void  OnEnter()
         {
             Canvas.ForceUpdateCanvases();
             switch (splashSelect)
@@ -151,7 +158,15 @@ namespace Fungus
                     GetSequence();
                     break;
             }
-            Continue();
+
+            if(splashSelect == threeFramu.Enable)
+            {
+                Continue();
+            }
+            if(splashSelect == threeFramu.Disable)
+            {
+                StartCoroutine(lastWait());
+            }
         }
 
         public override void OnCommandAdded(Block parentBlock)
