@@ -4,6 +4,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 namespace Fungus
 {
     public enum threeFramu
@@ -26,35 +27,30 @@ namespace Fungus
         [SerializeField] public threeFramu splashSelect;
         [Tooltip("Images")]
         [SerializeField] public GameObject[] imgSrc = new GameObject[0];
-        protected static GameObject[] imgSrcc;
-        public static bool allDone = false;
-        public static bool insStatesIsRunning = false;
-        public static bool stillTweening = false;
-        public static bool StillTweening { get { return stillTweening; } set { stillTweening = value; } }
+        protected static bool allDone = false;
+        protected static bool stillTweening = false;
+        [Tooltip("Ping pong/reverse loop style")]
+        [SerializeField] protected bool pingPongLoop = true;
+        [Tooltip("Random delay after animation has been completely animated")]
+        [SerializeField] protected float[] randomValues = new float[0];
         private static int sibIndex = 0;
         //Cache SiblingIndex
         protected static List<int> cacheIndex = new List<int>();
-
-        protected IEnumerator GetSequence()
+        WaitForSeconds waiting = new WaitForSeconds(0.1f);
+        protected void GetSequence()
         {
             if (splashSelect == threeFramu.Enable && stillTweening == false)
-            {
+            {                
                 for (int j = 0; j < imgSrc.Length; j++)
                 {
                     //Cache SiblingIndex to List
-                    var b = transform.GetSiblingIndex();
-                    cacheIndex.Add(b);
-                    //Debug.Log(cacheIndex[j].name);
+                    cacheIndex.Add(imgSrc[j].transform.GetSiblingIndex());
+
                     if (imgSrc[j] != null)
                     {
                         stillTweening = true;
+                        imgSrc[j].SetActive(true);
 
-                        //Start on next frame after each iteration, just to be safe.
-                        if (j % 1 == 0)
-                        {
-                            imgSrc[j].SetActive(true);
-                            yield return null;
-                        }
                         if(imgSrc[j].activeInHierarchy == true)
                         {
                             StartCoroutine(loopAnim());
@@ -63,24 +59,50 @@ namespace Fungus
                     else
                     {
                         stillTweening = false;
-                        yield break;
                     }
                 }
             }
         }
 
         protected IEnumerator loopAnim()
-        {
-            //stillTweening = true;
+        {            
             while (allDone == false)
             {
                 if (stillTweening == true)
                 {
-                    foreach (GameObject gg in imgSrc)
+                    for(int i = 0; i < imgSrc.Length; i++)
                     {
-                        int hh = gg.transform.GetSiblingIndex();
-                        yield return new WaitForSeconds(0.1f);
-                        gg.transform.SetSiblingIndex(hh + sibIndex++);
+                        if (i % 1 == 0)
+                        {
+                            int hh = imgSrc[i].transform.GetSiblingIndex();
+                            yield return waiting;
+                            imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                        }
+                    }
+                    //Reverse it
+                    if(pingPongLoop)
+                    {
+                        for (int i = imgSrc.Length - 1; i >= 0; i--)  
+                        {
+                            if (i % 1 == 0)
+                            {
+                                int hh = imgSrc[i].transform.GetSiblingIndex();
+                                yield return waiting;
+                                imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                            }
+                        }
+                    }
+                    //Rendom delay
+                    if(randomValues != null)
+                    {
+                        for(int i = 0; i < randomValues.Length; i++)
+                        {
+                            if(randomValues[i] >= 0)
+                            {
+                                //Randomness
+                                yield return new WaitForSeconds(randomValues[i]);
+                            }
+                        }
                     }
                 }
                 else
@@ -92,17 +114,18 @@ namespace Fungus
         }
         protected void InStates()
         {
+            Canvas.ForceUpdateCanvases();
             for (int i = 0; i < imgSrc.Length; i++)
             {
                 imgSrc[i].SetActive(false);
                 for(int j = 0; j < cacheIndex.Count; j++)
                 {
                     //Make sure they are back to it's original order in the hierarchy
-                    //This prevents wrong sequence if the same images used at a later time in the same scene
+                    //This prevents wrong sequence if the same set of images used at a later time in the same scene
                     imgSrc[i].transform.SetSiblingIndex(cacheIndex[j]);
                 }
             }
-            StopAllCoroutines();
+            StopCoroutine(loopAnim());
             cacheIndex = new List<int>();
         }
         #region Public members
@@ -110,11 +133,10 @@ namespace Fungus
         {
             return new Color32(221, 184, 169, 255);
         }
-        public static void GetThreeFramer(bool acstate)
+        public void GetThreeFramer(bool acstate)
         {
             sibIndex = 0;
             stillTweening = acstate;
-            insStatesIsRunning = acstate;
         }
 
         public override void OnEnter()
@@ -126,7 +148,7 @@ namespace Fungus
                     GetThreeFramer(false);
                     break;
                 case (threeFramu.Enable):
-                    StartCoroutine(GetSequence());
+                    GetSequence();
                     break;
             }
             Continue();
