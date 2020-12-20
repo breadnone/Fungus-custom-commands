@@ -1,5 +1,7 @@
 **My custom commands made to be used for my game development called Aya's Loop**  
 <hr>
+PortraitAnime - Portrait frame-by-frame animation (EXPERIMENTAL!). Copy this to assets, and PortraitAnimEditor to Editor folder.
+<hr>
 BaloonDialog -  Baloon Thoughts/Dialog like in anime/manga  
 <hr>
 Clickable Character  
