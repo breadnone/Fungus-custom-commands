@@ -1,7 +1,5 @@
 **My custom commands made to be used for my game development called Aya's Loop**  
 <hr>
-PortraitAnime - Portrait frame-by-frame animation (EXPERIMENTAL!). Copy this to assets, and PortraitAnimEditor to Editor folder.
-<hr>
 BaloonDialog -  Baloon Thoughts/Dialog like in anime/manga  
 <hr>
 Clickable Character - You must eyeballing the position of the BoxCollider on Scene while the game is running to get the exact position.  
@@ -23,6 +21,7 @@ twoDeffects - Fake 2D particle system through LeanTween.
 PortraitAnim - Character frame-by-frame animation utilizing the portraits list(use Enable & Disable to activate and deactivate)  
 Making a character blinking, noding or moving in general pretty much easier. It is recommended to create separate character entity with animation sprites in it.
 Access from code : PortraitAnim varname = GetComponent<PortraitAnim>(); varname.disablePortraitAnim(false);  
+IMPORTANT! Create separate fresh Stage just for this custom comamand and Do not use Dim or any other fancy settings in Stage!
 Note: You must copy the PortraitAnimEditor to Editor folder!  
 <hr>  
 Say3rd - Say command with 3rd person/narrator functionality like in story books  
