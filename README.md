@@ -21,7 +21,7 @@ Transition - Custom seamless Transition animation with jump through label featur
 twoDeffects - Fake 2D particle system through LeanTween.  
 <hr>
 PortraitAnim - Character frame-by-frame animation utilizing the portraits list(use Enable & Disable to activate and deactivate)  
-Making a character blinking, noding or moving in general pretty much easier.
+Making a character blinking, noding or moving in general pretty much easier. It is recommended to create separate character entity with animation sprites in it.
 Access from code : PortraitAnim varname = GetComponent<PortraitAnim>(); varname.disablePortraitAnim(false);  
 Note: You must copy the PortraitAnimEditor to Editor folder!  
 <hr>  
