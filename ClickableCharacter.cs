@@ -2,9 +2,6 @@
 // It is released for free under the MIT open source license (https://github.com/snozbot/fungus/blob/master/LICENSE)
 
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
 using UnityEngine.Events;
 using System;
 
@@ -18,7 +15,7 @@ namespace Fungus
     public enum InvokeTypeClick
     {
         /// <summary> Call a method with an optional constant value parameter. </summary>
-        Static,         // 
+        Static,
         /// <summary> Call a method with an optional boolean constant / variable parameter. </summary>
         DynamicBoolean,
         /// <summary> Call a method with an optional integer constant / variable parameter. </summary>
@@ -33,7 +30,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Sprite",
                  "Clickable Character",
-                 "Adds ability for character to be clickable with the use of BoxCollider and Raycast. This won'r follow character's movements nor animations. To update it's position you must create new one. Note: Offset: 0 : 0 means center.")]
+                 "Adds ability for character to be clickable with the use of BoxCollider and Raycast. This won'r follow character's movements nor animations. To update it's position you must create new one. Note: Offset: 0 : 0 means center. Make sure these requirements met: Camera has a Physics Raycaster, EventSystem, Verify no collider (possibly without a mesh) is obscuring the selectable game object")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class ClickableCharacter : Command
@@ -103,19 +100,16 @@ namespace Fungus
                     break;
             }
         }
-        protected Vector2 charPos;
         protected string cacheChar;
         protected bool actives = false;
-        protected float xx;
-        protected float yy;
-        
+       
         #region Public members
         [Serializable] public class BooleanEvent : UnityEvent<bool> {}
         [Serializable] public class IntegerEvent : UnityEvent<int> {}
         [Serializable] public class FloatEvent : UnityEvent<float> {}
         [Serializable] public class StringEvent : UnityEvent<string> {}
         void Update()
-        {
+        { 
             if(actives)
             {
                 if(character.State.portraitImage != null)
@@ -205,11 +199,8 @@ namespace Fungus
                 boxy = myGO.GetComponent<BoxCollider2D>();
                 boxy.transform.SetParent(character.transform, false);
                 boxy.size = hitBoxSize;
-                boxy.offset = offsets;
-                
+                boxy.offset = offsets;                
             }
-
-
         }
 
         protected void UpdateStage()
