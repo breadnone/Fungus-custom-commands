@@ -4,25 +4,27 @@ PortraitAnime - Portrait frame-by-frame animation (EXPERIMENTAL!). Copy this to 
 <hr>
 BaloonDialog -  Baloon Thoughts/Dialog like in anime/manga  
 <hr>
-Clickable Character  
+Clickable Character - You must eyeballing the position of the BoxCollider on Scene while the game is running to get the exact position.  
 Copy ClickableCharacterEditor.cs to Editor folder  
 Copy ClickableCharacter.cs to your Assets folder
 <hr>  
-CartoonEffects - 2D animation effects  
+CartoonEffects - (EXPERIMENTAL) 2D animation effects  
 <hr>
 PauseScreen - Pause command  
 <hr>
 ThreeFramer - Frame-by-frame background animation  
 Making backgound to move in loop by continuously shuffling it's index.  
-Note: This is single instance only. Meaning it can't animating multiple backgound instances!  
+Note: This is single instance only. Meaning it can't animate multiple backgound instances!  
 <hr>
-Transition - Transition animation  
+Transition - Custom seamless Transition animation with jump through label feature.  
 <hr>
-twoDeffects - Fake 2D particle system  
+twoDeffects - Fake 2D particle system through LeanTween.  
 <hr>
 PortraitAnim - Character frame-by-frame animation utilizing the portraits list(use Enable & Disable to activate and deactivate)  
 Making a character blinking, noding or moving in general pretty much easier.
 Access from code : PortraitAnim varname = GetComponent<PortraitAnim>(); varname.disablePortraitAnim(false);  
 Note: You must copy the PortraitAnimEditor to Editor folder!  
 <hr>  
-Say3rd - Say command with 3rd person functionality
+Say3rd - Say command with 3rd person functionality  
+<hr>  
+SetMouseCursor - Custom cursor with animation while clicking.  
