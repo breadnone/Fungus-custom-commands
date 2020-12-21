@@ -36,6 +36,7 @@ namespace Fungus
 
         public override void OnEnter()
         {   
+            Canvas.ForceUpdateCanvases();
             for(int i = 0; i < sprites.Length; i++)
             {
                 if(sprites[i].spriteRenderer != null)
@@ -57,6 +58,17 @@ namespace Fungus
             }
             Continue();
         }
+        public override bool HasReference(Variable variable)
+        {
+            //this is funky. Bcos Nullable throws error
+            bool tmpBool = true;
+            for(int i = 0; i < sprites.Length; i++)
+            {
+                tmpBool = sprites[i]._visible.booleanRef == variable || base.HasReference(variable);
+            }
+            return tmpBool;
+        }
+
         public override Color GetButtonColor()
         {
             return new Color32(221, 184, 169, 255);

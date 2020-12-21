@@ -22,8 +22,8 @@ namespace Fungus
         [System.Serializable]
         public class BulkDrop
         {
-            public GameObject gamobjects;
-            public bool activeStates;
+            public GameObjectData gamobjects;
+            public BooleanData activeState;
             public float delay = 0;
         }
         [SerializeField] public BulkDrop[] _targetGameObject = new BulkDrop[1];
@@ -39,26 +39,40 @@ namespace Fungus
         {
             for (int i = 0; i < _targetGameObject.Length; i++)
             {
-                if (_targetGameObject[i].activeStates == true && _targetGameObject[i].gamobjects != null)
+                if (_targetGameObject[i].activeState == true && _targetGameObject[i].gamobjects.Value != null)
                 {
                     //Delay after each iteration.
                     if (i % 1 == 0)
                     {
-                        _targetGameObject[i].gamobjects.SetActive(true);
+                        _targetGameObject[i].gamobjects.Value.SetActive(true);
                         yield return new WaitForSeconds(_targetGameObject[i].delay);
                     }
                 }
 
-                if (_targetGameObject[i].activeStates == false && _targetGameObject[i].gamobjects != null)
+                if (_targetGameObject[i].activeState == false && _targetGameObject[i].gamobjects.Value != null)
                 {
                     //Delay after each iteration.
                     if (i % 1 == 0)
                     {
-                        _targetGameObject[i].gamobjects.SetActive(false);
+                        _targetGameObject[i].gamobjects.Value.SetActive(false);
                         yield return new WaitForSeconds(_targetGameObject[i].delay);
                     }
                 }
             }
+        }
+
+
+        public override bool HasReference(Variable variable)
+        {
+            //this is funky :0
+            bool tmpBool = true;
+            for(int i = 0; i < _targetGameObject.Length; i++)
+            {
+                tmpBool = _targetGameObject[i].gamobjects.gameObjectRef == variable || _targetGameObject[i].activeState.booleanRef == variable ||
+                    base.HasReference(variable);
+                    
+            }
+            return tmpBool;
         }
 
         public override void OnEnter()
