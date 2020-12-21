@@ -13,7 +13,7 @@ CartoonEffects - (EXPERIMENTAL) 2D animation effects
 PauseScreen - Pause command  
 <hr>
 ThreeFramer - Frame-by-frame background animation  
-Making backgound to move in loop by continuously shuffling it's index.  
+Makes backgound to move in loop by continuously shuffling it's index in hieararchy.  
 Note: This is single instance only. Meaning it can't animate multiple backgound instances!  
 <hr>
 Transition - Custom seamless Transition animation with jump through label feature.  
