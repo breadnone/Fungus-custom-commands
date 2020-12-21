@@ -65,7 +65,7 @@ namespace Fungus
         //Cache position
         protected Vector3 cachePos;
         //Make sure they're done tweening. This won't be affected even if user spam clicks
-        protected virtual void OnComplete() 
+        protected virtual void OnComplete()
         {
             if (waitUntilFinished)
             {
@@ -78,20 +78,16 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(-1f, 1f, 1f), 0.1f).setEase(LeanTweenType.easeInOutBounce).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(-1f, 1f, 1f), 0.1f).setEase(LeanTweenType.easeInOutBounce).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
-                        OnComplete();
-                    }
-                );
+                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    OnComplete();
                 }
+            );
             }
         }
         // Super Happy expression
@@ -102,22 +98,18 @@ namespace Fungus
             //Cache position
             var defPos = character.State.portraitImage.transform.position;
             cachePos = defPos;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.moveY(character.State.portraitImage.rectTransform, 150f, 0.2f).setEaseInQuad().setLoopPingPong(2);
+                LeanTween.color(character.State.portraitImage.rectTransform, Color.yellow, 0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.moveY(character.State.portraitImage.rectTransform, 150f, 0.2f).setEaseInQuad().setLoopPingPong(2);
-                    LeanTween.color(character.State.portraitImage.rectTransform, Color.yellow, 0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.transform.position = cachePos;                  
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.transform.position = cachePos;
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
         }
         // Happy expression
@@ -128,20 +120,16 @@ namespace Fungus
             //Cache position
             var defPos = character.State.portraitImage.transform.position;
             cachePos = defPos;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.moveY(character.State.portraitImage.rectTransform, 100f, 0.2f).setEaseInQuad().setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.moveY(character.State.portraitImage.rectTransform, 100f, 0.2f).setEaseInQuad().setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.transform.position = cachePos;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.transform.position = cachePos;
+                    OnComplete();
                 }
+            );
             }
         }
         // Wobble animation
@@ -149,20 +137,16 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1.2f), 0.3f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1.2f), 0.3f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
-                        OnComplete();
-                    }
-                );
+                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    OnComplete();
                 }
+            );
             }
         }
         // Sinking down animation
@@ -170,20 +154,16 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.25f, 1f, 1.25f), 1.5f).setDelay(0.1f).setLoopPingPong(1).setOnComplete(
+                () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.25f, 1f, 1.25f), 1.5f).setDelay(0.1f).setLoopPingPong(1).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
-                        OnComplete();
-                    }
-                );
+                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    OnComplete();
                 }
+            );
             }
         }
         // Zoom In animation
@@ -191,20 +171,16 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.4f, 1.4f, 1.4f), 0.3f).setEase(LeanTweenType.easeOutBounce).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.4f, 1.4f, 1.4f), 0.3f).setEase(LeanTweenType.easeOutBounce).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
-                        OnComplete();
-                    }
-                );
+                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    OnComplete();
                 }
+            );
             }
         }
         // Zoom In + Color animation
@@ -212,22 +188,18 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.3f, 1.3f, 1.3f), 0.3f).setDelay(0.1f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
+                LeanTween.color(character.State.portraitImage.rectTransform, Color.clear, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.3f, 1.3f, 1.3f), 0.3f).setDelay(0.1f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
-                    LeanTween.color(character.State.portraitImage.rectTransform, Color.clear, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
         }
         // Stretch Wobble with color animation
@@ -235,22 +207,18 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1.2f), 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
+                LeanTween.color(character.State.portraitImage.rectTransform, Color.green, 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1.2f), 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
-                    LeanTween.color(character.State.portraitImage.rectTransform, Color.green, 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
         }
         //Panic animation to character
@@ -261,20 +229,16 @@ namespace Fungus
             //Cache position
             var defPos = character.State.portraitImage.transform.position;
             cachePos = defPos;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
-                {                    
-                    LeanTween.moveX(character.State.portraitImage.rectTransform, 100f, 0.2f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.transform.position = cachePos;
-                        OnComplete();
-                    }
-                );
+                LeanTween.moveX(character.State.portraitImage.rectTransform, 100f, 0.2f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
+                () =>
+                {
+                    character.State.portraitImage.transform.position = cachePos;
+                    OnComplete();
                 }
+            );
             }
         }
         // Mad expression
@@ -282,20 +246,16 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.color(character.State.portraitImage.rectTransform, Color.cyan, 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.color(character.State.portraitImage.rectTransform, Color.cyan, 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
         }
         // Mad expression
@@ -303,21 +263,17 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.color(character.State.portraitImage.rectTransform, Color.red, 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2
+                ).setOnComplete(
+                () =>
                 {
-                    LeanTween.color(character.State.portraitImage.rectTransform, Color.red, 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2
-                    ).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
         }
         // Shock expression
@@ -325,20 +281,16 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.1f).setLoopPingPong(3).setEase(LeanTweenType.linear).setDelay(0.1f).setOnComplete(
+                () =>
                 {
-                    LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.1f).setLoopPingPong(3).setEase(LeanTweenType.linear).setDelay(0.1f).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f);
-                        OnComplete();
-                    }
-                );
+                    LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f);
+                    OnComplete();
                 }
+            );
             }
         }
         // Aqua Color
@@ -346,84 +298,72 @@ namespace Fungus
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.color(character.State.portraitImage.rectTransform, new Color32(0, 201, 254, 1), 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.color(character.State.portraitImage.rectTransform, new Color32( 0 , 201 , 254, 1 ), 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
+
         }
         // Pink color
         protected void PinkSpeakingPortraits(Character character)
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.color(character.State.portraitImage.rectTransform, new Color32(232, 0, 254, 1), 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.color(character.State.portraitImage.rectTransform, new Color32( 232 , 0 , 254, 1 ), 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
+
         }
         // Cyan color
         protected void CyanSpeakingPortraits(Character character)
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.color(character.State.portraitImage.rectTransform, Color.cyan, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
+                () =>
                 {
-                    LeanTween.color(character.State.portraitImage.rectTransform, Color.cyan, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
-                    () =>
-                    {
-                        character.State.portraitImage.color = Color.white;
-                        OnComplete();
-                    }
-                );
+                    character.State.portraitImage.color = Color.white;
+                    OnComplete();
                 }
+            );
             }
+
         }
         // Clear color
         protected void ClearSpeakingPortraits(Character character)
         {
             //Prevent user spam clicks
             dialInput.enabled = false;
-            var activeStages = Stage.ActiveStages;
-            for (int i = 0; i < activeStages.Count; i++)
+
+            if (character != null)
             {
-                var stage = activeStages[i];
-                if (character != null)
+                LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.2f).setLoopPingPong(2).setEase(LeanTweenType.linear).setDelay(0.2f).setOnComplete(
+                () =>
                 {
-                    LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.2f).setLoopPingPong(2).setEase(LeanTweenType.linear).setDelay(0.2f).setOnComplete(
-                    () =>
-                    {
-                        LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f).setDelay(0.2f);
-                        OnComplete();
-                    }
-                );
+                    LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f).setDelay(0.2f);
+                    OnComplete();
                 }
+            );
             }
+
         }
         public override void OnEnter()
         {
