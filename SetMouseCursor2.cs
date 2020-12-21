@@ -26,6 +26,9 @@ namespace Fungus
 
         [Tooltip("The offset from the top left of the texture to use as the target point")]
         [SerializeField] protected Vector2 hotSpot2;
+        
+        [Tooltip("This for safety reasons, in case user spam clicks. Set the number higher. Can't be lower than 0.3, if it's lower, then 0.3 will be used")]
+        [SerializeField] protected float clickSpamPrevention = 0.3f;
         // Cached static cursor settings
         protected static Texture2D activeCursorTexture;
         protected static Vector2 activeHotspot;
@@ -41,11 +44,14 @@ namespace Fungus
         }
         void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if(cursorTexture && cursorTexture2 != null)
             {
-                if(!clicked)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    StartCoroutine(clicking());
+                    if(!clicked)
+                    {
+                        StartCoroutine(clicking());
+                    }
                 }
             }
         }
@@ -55,7 +61,14 @@ namespace Fungus
             {
                 clicked = true;
                 Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
-                yield return new WaitForSeconds(0.3f);
+                if(clickSpamPrevention <= 0.3)
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(clickSpamPrevention);
+                }
                 BeforeClicking();
             }
         }
@@ -78,6 +91,7 @@ namespace Fungus
             activeCursorTexture2 = cursorTexture2;
             activeHotspot = hotSpot;
             activeHotspot2 = hotSpot2;
+
             Continue();
         }        
 
