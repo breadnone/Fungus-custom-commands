@@ -47,21 +47,27 @@ namespace Fungus
                 {
                     StartCoroutine(clicking());
                 }
-            } 
+            }
         }
         public IEnumerator clicking()
         {
-            clicked = true;
-            Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
-            yield return new WaitForSeconds(0.3f);
-            BeforeClicking();
+            if(clicked == false)
+            {
+                clicked = true;
+                Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
+                yield return new WaitForSeconds(0.3f);
+                BeforeClicking();
+            }
         }
         
         public void BeforeClicking()
         {
-            Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
-            StopCoroutine(clicking());
-            clicked = false;
+            if(clicked == true)
+            {
+                Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
+                StopCoroutine(clicking());
+                clicked = false;
+            }
         }
 
         public override void OnEnter()
@@ -73,8 +79,7 @@ namespace Fungus
             activeHotspot = hotSpot;
             activeHotspot2 = hotSpot2;
             Continue();
-        }
-        
+        }        
 
         public override string GetSummary()
         {
