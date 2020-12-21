@@ -60,9 +60,9 @@ namespace Fungus
         public void BeforeClicking()
         {
             Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
+            StopCoroutine(clicking());
             clicked = false;
         }
-        
 
         public override void OnEnter()
         {
