@@ -244,7 +244,7 @@ namespace Fungus
             }
             return noCol + " : " + noCam;
 
-
+            #pragma warning disable CS0162 // Silent the bogus warnings
             if (!string.IsNullOrEmpty(description))
             {
                 return description;
