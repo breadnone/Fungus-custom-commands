@@ -22,7 +22,6 @@ namespace Fungus
     [ExecuteInEditMode]
     public class ThreeFramer : Command
     {
-        private static ThreeFramer instance;
         [Tooltip("Enable")]
         [SerializeField] public threeFramu splashSelect;
         [Tooltip("Images")]
@@ -69,16 +68,17 @@ namespace Fungus
             {
                 if (stillTweening)
                 {
+                    //One way loop
                     for(int i = 0; i < imgSrc.Length; i++)
                     {
                         if (i % 1 == 0)
                         {
                             int hh = imgSrc[i].transform.GetSiblingIndex();
-                            yield return waiting;
                             imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                            yield return waiting;
                         }
                     }
-                    //Reverse it
+                    //Reverse the loop to get the PingPong effect
                     if(pingPongLoop)
                     {
                         for (int i = imgSrc.Length - 1; i >= 0; i--)  
@@ -86,8 +86,8 @@ namespace Fungus
                             if (i % 1 == 0)
                             {
                                 int hh = imgSrc[i].transform.GetSiblingIndex();
-                                yield return waiting;
                                 imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                                yield return waiting;
                             }
                         }
                     }
@@ -108,9 +108,10 @@ namespace Fungus
                     imgSrc[i].transform.SetSiblingIndex(cacheIndex[j]);
                 }
             }
-
             InStates();
+            yield break;
         }
+        //Housekeeping
         protected void InStates()
         {
             //Sanity check            
@@ -124,12 +125,15 @@ namespace Fungus
         {
             return new Color32(221, 184, 169, 255);
         }
+        //Set initialization
         public void GetThreeFramer(bool acstate)
         {
             sibIndex = 0;
             stillTweening = acstate;
         }
-        public IEnumerator lastWait()
+
+        //Halt block progression in flowchart until everything is done. 
+        protected IEnumerator lastWait()
         {
             while (true)
             {
@@ -139,13 +143,21 @@ namespace Fungus
                 }
                 else 
                 {
-                    StopAllCoroutines();
                     Continue();
+                    //Next frame stop
+                    yield return null;
                     yield break;
                 }
             }
-        } 
+        }
 
+/*
+        //In case shits happen
+        public void StopAll()
+        {
+            StopAllCoroutines();
+        }
+*/
         public override void  OnEnter()
         {
             Canvas.ForceUpdateCanvases();
@@ -163,6 +175,8 @@ namespace Fungus
             {
                 Continue();
             }
+            
+            //Halt the prgression until allDone = true
             if(splashSelect == threeFramu.Disable)
             {
                 StartCoroutine(lastWait());
