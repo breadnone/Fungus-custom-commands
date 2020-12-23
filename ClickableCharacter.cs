@@ -303,6 +303,7 @@ namespace Fungus
             }
 
             string summary = invokeType.ToString() + " ";
+            string summary2 = invokeType2.ToString() + " ";
 
             switch (invokeType)
             {
@@ -324,7 +325,27 @@ namespace Fungus
                 break;
             }
 
-            return summary + " methods";
+            switch (invokeType2)
+            {
+            default:
+            case InvokeTypeClick2.Static:
+                summary2 += staticEvent2.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick2.DynamicBoolean:
+                summary2 += booleanEvent2.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick2.DynamicInteger:
+                summary2 += integerEvent2.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick2.DynamicFloat:
+                summary2 += floatEvent2.GetPersistentEventCount();
+                break;
+            case InvokeTypeClick2.DynamicString:
+                summary2 += stringEvent2.GetPersistentEventCount();
+                break;
+            }
+
+            return summary + summary2 + " methods";
         }
         public override void OnEnter()
         {
