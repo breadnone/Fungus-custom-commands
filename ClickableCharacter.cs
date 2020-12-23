@@ -25,6 +25,19 @@ namespace Fungus
         /// <summary> Call a method with an optional string constant / variable parameter. </summary>
         DynamicString
     }
+    public enum InvokeTypeClick2
+    {
+        /// <summary> Call a method with an optional constant value parameter. </summary>
+        Static,
+        /// <summary> Call a method with an optional boolean constant / variable parameter. </summary>
+        DynamicBoolean,
+        /// <summary> Call a method with an optional integer constant / variable parameter. </summary>
+        DynamicInteger,
+        /// <summary> Call a method with an optional float constant / variable parameter. </summary>
+        DynamicFloat,
+        /// <summary> Call a method with an optional string constant / variable parameter. </summary>
+        DynamicString
+    }
     /// <summary>
     /// Tween sequence
     /// </summary>
@@ -42,8 +55,6 @@ namespace Fungus
         [SerializeField] protected Vector2 hitBoxSize = new Vector2(13f, 28f);
         [SerializeField] protected Vector2 offsets = new Vector2(0, 0);
         [SerializeField] protected bool enableDebugLog = false;
-
-        [Header("Execute When Clicked")]
         [Tooltip("A description of what this command does. Appears in the command summary.")]
         [SerializeField] protected string description = "";
         [Tooltip("Selects type of method parameter to pass")]
@@ -77,6 +88,38 @@ namespace Fungus
 
         [Tooltip("List of methods to call. Supports methods with one string parameter.")]
         [SerializeField] protected StringEvent stringEvent = new StringEvent();
+
+        [Tooltip("Selects type of method parameter to pass")]
+        [SerializeField] protected InvokeTypeClick2 invokeType2;
+        [Tooltip("Delay (in seconds) before the methods will be called")]
+        [SerializeField] protected float delay2;
+
+        [Tooltip("List of methods to call. Supports methods with no parameters or exactly one string, int, float or object parameter.")]
+        [SerializeField] protected UnityEvent staticEvent2 = new UnityEvent();
+
+        [Tooltip("Boolean parameter to pass to the invoked methods.")]
+        [SerializeField] protected BooleanData booleanParameter2;
+
+        [Tooltip("List of methods to call. Supports methods with one boolean parameter.")]
+        [SerializeField] protected BooleanEvent booleanEvent2 = new BooleanEvent();
+
+        [Tooltip("Integer parameter to pass to the invoked methods.")]
+        [SerializeField] protected IntegerData integerParameter2;
+        
+        [Tooltip("List of methods to call. Supports methods with one integer parameter.")]
+        [SerializeField] protected IntegerEvent integerEvent2 = new IntegerEvent();
+
+        [Tooltip("Float parameter to pass to the invoked methods.")]
+        [SerializeField] protected FloatData floatParameter2;
+        
+        [Tooltip("List of methods to call. Supports methods with one float parameter.")]
+        [SerializeField] protected FloatEvent floatEvent2 = new FloatEvent();
+
+        [Tooltip("String parameter to pass to the invoked methods.")]
+        [SerializeField] protected StringDataMulti stringParameter2;
+
+        [Tooltip("List of methods to call. Supports methods with one string parameter.")]
+        [SerializeField] protected StringEvent stringEvent2 = new StringEvent();
         protected Stage stage;
         protected virtual void DoInvoke()
         {
@@ -154,6 +197,13 @@ namespace Fungus
                     {
                         Invoke("DoInvoke", delay);
                     }
+                }
+            }
+            else
+            {
+                if(enableDebugLog)
+                {
+                    Debug.Log("Clicked outside character : " + character.name);
                 }
             }
         }
