@@ -28,6 +28,6 @@ Say3rd - Say command with 3rd person/narrator functionality like in story books
 <hr>  
 SetMouseCursor - Custom cursor with animation while clicking.  
 <hr>
-BetterWait - To halt execution temporarily with click spam prevention, which the original doesn't have. The original uses Invoke, this uses Coroutine.  
+BetterWait - To halt execution temporarily with click spam prevention, which the original doesn't have, without click spam prevention in some cases the game would sometimes fail. The original uses Invoke, this uses Coroutine.  
 <hr>
 StandAloneCharacterPointSystem - Super simple realtime variable loader that can be used for; affection point/MP/HP. Put this on separate/disconnected block  
