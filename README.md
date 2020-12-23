@@ -2,7 +2,7 @@
 <hr>
 BaloonDialog -  Baloon Thoughts/Dialog like in anime/manga  
 <hr>
-Clickable Character - You must eyeballing the position of the BoxCollider on Scene while the game is running to get the exact position.  
+Clickable Character - You must eyeballing the position of the BoxCollider on Scene while the game is running to get the exact position. Currently it's not possible to follow character movement, it can, but comes with performance degradation, so disabled for now  
 Copy ClickableCharacterEditor.cs to Editor folder  
 Copy ClickableCharacter.cs to your Assets folder
 <hr>  
