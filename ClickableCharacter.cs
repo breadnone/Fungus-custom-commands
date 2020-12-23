@@ -138,19 +138,22 @@ namespace Fungus
             RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction, Mathf.Infinity);
             if (hit) 
             {
-                if(enableDebugLog)
+                if(hit.collider.gameObject.name == character.name)
                 {
-                    Debug.Log ("This gameObject was clicked :" + hit.collider.gameObject.name);
-                }
-                
-                //Invoke starts here!
-                if (Mathf.Approximately(delay, 0f))
-                {
-                    DoInvoke();
-                }
-                else
-                {
-                    Invoke("DoInvoke", delay);
+                    if(enableDebugLog)
+                    {
+                        Debug.Log ("This character was clicked : " + hit.collider.gameObject.name);
+                    }
+                    
+                    //Invoke starts here!
+                    if (Mathf.Approximately(delay, 0f))
+                    {
+                        DoInvoke();
+                    }
+                    else
+                    {
+                        Invoke("DoInvoke", delay);
+                    }
                 }
             }
         }
@@ -194,7 +197,7 @@ namespace Fungus
                 BoxCollider2D boxy;
                 float rectX = character.State.portraitImage.rectTransform.sizeDelta.x;
                 float rectY = character.State.portraitImage.rectTransform.sizeDelta.y;
-                GameObject myGO = new GameObject("stvphtwod-fclickable" + "_" + character.name);
+                GameObject myGO = new GameObject(character.name);
                 myGO.AddComponent<BoxCollider2D>();
                 boxy = myGO.GetComponent<BoxCollider2D>();
                 boxy.transform.SetParent(character.transform, false);
@@ -243,8 +246,7 @@ namespace Fungus
                 }
             }
             return noCol + " : " + noCam;
-
-            #pragma warning disable CS0162 // Silent the bogus warnings
+            #pragma warning disable CS0162
             if (!string.IsNullOrEmpty(description))
             {
                 return description;
