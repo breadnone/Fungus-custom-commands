@@ -4,6 +4,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System;
+using System.Linq;
 
 namespace Fungus
 {
@@ -120,6 +121,7 @@ namespace Fungus
 
         [Tooltip("List of methods to call. Supports methods with one string parameter.")]
         [SerializeField] protected StringEvent stringEvent2 = new StringEvent();
+        protected string myGoGo = "";
         protected Stage stage;
         protected virtual void DoInvoke()
         {
@@ -179,9 +181,10 @@ namespace Fungus
         {
             Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast (ray.origin, ray.direction, Mathf.Infinity);
+
             if (hit) 
             {
-                if(hit.collider.gameObject.name == character.name)
+                if(hit.collider.gameObject.name == myGoGo)
                 {
                     if(enableDebugLog)
                     {
@@ -191,11 +194,11 @@ namespace Fungus
                     //Invoke starts here!
                     if (Mathf.Approximately(delay, 0f))
                     {
-                        DoInvoke();
+                        this.DoInvoke();
                     }
                     else
                     {
-                        Invoke("DoInvoke", delay);
+                        this.Invoke("DoInvoke", delay);
                     }
                 }
             }
@@ -240,6 +243,7 @@ namespace Fungus
             
         }
 */
+        private static int indexNum = 0;
         protected void AddCollider()
         {
             if(character != null  && mainCam != null)
@@ -247,7 +251,8 @@ namespace Fungus
                 BoxCollider2D boxy;
                 float rectX = character.State.portraitImage.rectTransform.sizeDelta.x;
                 float rectY = character.State.portraitImage.rectTransform.sizeDelta.y;
-                GameObject myGO = new GameObject(character.name);
+                GameObject myGO = new GameObject(character.name + "_" + indexNum++);
+                myGoGo = myGO.name;
                 myGO.AddComponent<BoxCollider2D>();
                 boxy = myGO.GetComponent<BoxCollider2D>();
                 boxy.transform.SetParent(character.transform, false);
@@ -349,6 +354,7 @@ namespace Fungus
         }
         public override void OnEnter()
         {
+
             
             //Force 1st frame update
             Canvas.ForceUpdateCanvases();
