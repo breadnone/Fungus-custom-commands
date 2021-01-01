@@ -29,8 +29,7 @@ namespace Fungus
         
         [Tooltip("This for safety reasons, in case user spam clicks. Set the number higher. Can't be lower than 0.3, if it's lower, then 0.3 will be used")]
         [SerializeField] protected float clickSpamPrevention = 0.3f;
-        [Tooltip("Set back to default cursor available")]
-        [SerializeField] protected bool resetToDefaultCursor = false;
+
         // Cached static cursor settings
         protected static Texture2D activeCursorTexture;
         protected static Vector2 activeHotspot;
@@ -46,16 +45,13 @@ namespace Fungus
         }
         void Update()
         {
-            if(!resetToDefaultCursor)
+            if(cursorTexture && cursorTexture2 != null)
             {
-                if(cursorTexture && cursorTexture2 != null)
+                if (Input.GetMouseButtonDown(0))
                 {
-                    if (Input.GetMouseButtonDown(0))
+                    if(!clicked)
                     {
-                        if(!clicked)
-                        {
-                            StartCoroutine(clicking());
-                        }
+                        StartCoroutine(clicking());
                     }
                 }
             }
@@ -63,63 +59,44 @@ namespace Fungus
         public void ResetMouseToDefault()
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
-            //resetToDefaultCursor = true;
-        }
-        public void EnableCustomMouseIfAny()
-        {
-            ResetMouseToDefault();
-            resetToDefaultCursor = true;
-            //resetToDefaultCursor = true;
         }
         public IEnumerator clicking()
         {
-            if(resetToDefaultCursor)
+            if(clicked == false)
             {
-                if(clicked == false)
+                clicked = true;
+                Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
+                if(clickSpamPrevention <= 0.3)
                 {
-                    clicked = true;
-                    Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
-                    if(clickSpamPrevention <= 0.3)
-                    {
-                        yield return new WaitForSeconds(0.3f);
-                    }
-                    else
-                    {
-                        yield return new WaitForSeconds(clickSpamPrevention);
-                    }
-                    BeforeClicking();
+                    yield return new WaitForSeconds(0.3f);
                 }
+                else
+                {
+                    yield return new WaitForSeconds(clickSpamPrevention);
+                }
+                BeforeClicking();
             }
         }
         
         public void BeforeClicking()
         {
-            if(resetToDefaultCursor)
+            if(clicked == true)
             {
-                if(clicked == true)
-                {
-                    Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
-                    StopCoroutine(clicking());
-                    clicked = false;
-                }
+                clicked = false;
+                Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
+                StopCoroutine(clicking());
+                
             }
         }
 
         public override void OnEnter()
         {
-            if(!resetToDefaultCursor)
-            {
-                Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto);
-                Cursor.SetCursor(cursorTexture2, hotSpot2, CursorMode.Auto);
-                activeCursorTexture = cursorTexture;
-                activeCursorTexture2 = cursorTexture2;
-                activeHotspot = hotSpot;
-                activeHotspot2 = hotSpot2;
-            }
-            else
-            {
-                ResetMouseToDefault();
-            }
+            Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto);
+            Cursor.SetCursor(cursorTexture2, hotSpot2, CursorMode.Auto);
+            activeCursorTexture = cursorTexture;
+            activeCursorTexture2 = cursorTexture2;
+            activeHotspot = hotSpot;
+            activeHotspot2 = hotSpot2;
 
             Continue();
         }        
