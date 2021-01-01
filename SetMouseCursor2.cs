@@ -107,17 +107,20 @@ namespace Fungus
 
         public override void OnEnter()
         {
-            if(cursorTexture && cursorTexture2 != null)
+            if(setCustomCursor == SetMouseCur.Enable)
             {
-                if(setCustomCursor == SetMouseCur.Enable)
+                if(cursorTexture && cursorTexture2 != null)
                 {
-                    onCustomCursorEnable = true;
                     Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto);
                     Cursor.SetCursor(cursorTexture2, hotSpot2, CursorMode.Auto);
                     activeCursorTexture = cursorTexture;
                     activeCursorTexture2 = cursorTexture2;
                     activeHotspot = hotSpot;
                     activeHotspot2 = hotSpot2;
+                }
+                else
+                {
+                    return;
                 }
             }
             if(setCustomCursor == SetMouseCur.Disable)
