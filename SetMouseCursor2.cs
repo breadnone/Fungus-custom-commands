@@ -133,19 +133,23 @@ namespace Fungus
 
         public override string GetSummary()
         {
+            string acur = "";
+            string bcur = "";
+
             if(setCustomCursor == SetMouseCur.Enable)
             {
                 if (cursorTexture == null)
                 {
-                    return "Error: No cursor sprite selected";
+                    acur = "Error: No cursor sprite selected";
                 }
                 if (cursorTexture2 == null)
                 {
-                    return "Error: No cursor sprite selected";
+                    bcur = "Error: No cursor sprite selected";
                 }
+                return acur + " : " + bcur;
             }
 
-            return cursorTexture.name + " : " + cursorTexture2.name;
+            
         }
 
         public override Color GetButtonColor()
