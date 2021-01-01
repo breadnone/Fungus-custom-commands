@@ -6,6 +6,15 @@ using System.Collections;
 
 namespace Fungus
 {
+    public enum SetMouseCur
+    {
+
+        Enable,
+        Disable
+
+    }
+
+
     /// <summary>
     /// Sets the mouse cursor sprite.
     /// </summary>
@@ -15,6 +24,8 @@ namespace Fungus
     [AddComponentMenu("")]
     public class SetMouseCursor2 : Command 
     {
+        [Tooltip("Enable/Disable custom cursor")]
+        [SerializeField] protected SetMouseCur setCustomCursor;
         [Tooltip("Texture to use for cursor. Will use default mouse cursor if no sprite is specified")]
         [SerializeField] protected Texture2D cursorTexture;
 
@@ -29,7 +40,7 @@ namespace Fungus
         
         [Tooltip("This for safety reasons, in case user spam clicks. Set the number higher. Can't be lower than 0.3, if it's lower, then 0.3 will be used")]
         [SerializeField] protected float clickSpamPrevention = 0.3f;
-
+        private static bool onCustomCursorEnable = false;
         // Cached static cursor settings
         protected static Texture2D activeCursorTexture;
         protected static Vector2 activeHotspot;
@@ -37,27 +48,33 @@ namespace Fungus
         protected static Vector2 activeHotspot2;
         protected bool clicked = false;
         #region Public members
+
         public static void ResetMouseCursor()
         {
             // Change mouse cursor back to most recent settings
             Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
             Cursor.SetCursor(activeCursorTexture2, activeHotspot2, CursorMode.Auto);
         }
+
         void Update()
         {
-            if(cursorTexture && cursorTexture2 != null)
+            if(onCustomCursorEnable == true)
             {
-                if (Input.GetMouseButtonDown(0))
+                if(cursorTexture && cursorTexture2 != null)
                 {
-                    if(!clicked)
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        StartCoroutine(clicking());
+                        if(!clicked)
+                        {
+                            StartCoroutine(clicking());
+                        }
                     }
                 }
             }
         }
         public void ResetMouseToDefault()
         {
+            onCustomCursorEnable = false;
             Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
         }
         public IEnumerator clicking()
@@ -85,31 +102,44 @@ namespace Fungus
                 clicked = false;
                 Cursor.SetCursor(activeCursorTexture, activeHotspot, CursorMode.Auto);
                 StopCoroutine(clicking());
-                
             }
         }
 
         public override void OnEnter()
         {
-            Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto);
-            Cursor.SetCursor(cursorTexture2, hotSpot2, CursorMode.Auto);
-            activeCursorTexture = cursorTexture;
-            activeCursorTexture2 = cursorTexture2;
-            activeHotspot = hotSpot;
-            activeHotspot2 = hotSpot2;
+            if(cursorTexture && cursorTexture2 != null)
+            {
+                if(setCustomCursor == SetMouseCur.Enable)
+                {
+                    onCustomCursorEnable = true;
+                    Cursor.SetCursor(cursorTexture, hotSpot, CursorMode.Auto);
+                    Cursor.SetCursor(cursorTexture2, hotSpot2, CursorMode.Auto);
+                    activeCursorTexture = cursorTexture;
+                    activeCursorTexture2 = cursorTexture2;
+                    activeHotspot = hotSpot;
+                    activeHotspot2 = hotSpot2;
+                }
+            }
+            if(setCustomCursor == SetMouseCur.Disable)
+            {
+                ResetMouseToDefault();
+            }
 
             Continue();
         }        
 
         public override string GetSummary()
         {
-            if (cursorTexture == null)
+            if(setCustomCursor == SetMouseCur.Enable)
             {
-                return "Error: No cursor sprite selected";
-            }
-            if (cursorTexture2 == null)
-            {
-                return "Error: No cursor sprite selected";
+                if (cursorTexture == null)
+                {
+                    return "Error: No cursor sprite selected";
+                }
+                if (cursorTexture2 == null)
+                {
+                    return "Error: No cursor sprite selected";
+                }
             }
 
             return cursorTexture.name + " : " + cursorTexture2.name;
