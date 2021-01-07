@@ -17,7 +17,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Animation",
                  "Background Animation",
-                 "Background frame-by-frame animation")]
+                 "Background frame-by-frame animation. Enable transparant to render fade-like type of animation(mostly used to animate bokeh, twinkling lights and so on)")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class ThreeFramer : Command
@@ -31,9 +31,10 @@ namespace Fungus
         [Tooltip("Ping pong/reverse loop style")]
         [SerializeField] protected bool pingPongLoop = true;
         private static int sibIndex = 0;
+        [SerializeField] protected bool enableTransparent = false;
         //Cache SiblingIndex
         protected static List<int> cacheIndex = new List<int>();
-        WaitForSeconds waiting = new WaitForSeconds(0.1f);
+        
         protected void GetSequence()
         {
             if (splashSelect == threeFramu.Enable && stillTweening == false)
@@ -47,12 +48,24 @@ namespace Fungus
                     {
                         stillTweening = true;
                         allDone = false;
-                        imgSrc[j].SetActive(true);
+                        if(!enableTransparent)
+                        {
+                            imgSrc[j].SetActive(true);
+                        }
+                        else
+                        {
+                            imgSrc[j].SetActive(false);
+                        }
 
-                        if(imgSrc[j].activeInHierarchy == true)
+                        if(imgSrc[j].activeInHierarchy == true && enableTransparent == false)
                         {
                             StartCoroutine(loopAnim());
                         }
+                        if(imgSrc[j].activeInHierarchy == false && enableTransparent == true)
+                        {
+                            StartCoroutine(loopAnim());
+                        }
+                        
                     }
                     else
                     {
@@ -63,7 +76,9 @@ namespace Fungus
         }
 
         protected IEnumerator loopAnim()
-        {            
+        {   
+            WaitForSeconds waiting = new WaitForSeconds(0.1f);
+            
             while (!allDone)
             {
                 if (stillTweening)
@@ -73,9 +88,22 @@ namespace Fungus
                     {
                         if (i % 1 == 0)
                         {
-                            int hh = imgSrc[i].transform.GetSiblingIndex();
-                            imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                            if(enableTransparent)
+                            {
+                                imgSrc[i].SetActive(true);
+                            }
+                            else
+                            {
+                                int hh = imgSrc[i].transform.GetSiblingIndex();
+                                imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                            }
+
                             yield return waiting;
+                            
+                            if(enableTransparent)
+                            {
+                                imgSrc[i].SetActive(false);
+                            }
                         }
                     }
                     //Reverse the loop to get the PingPong effect
@@ -85,9 +113,20 @@ namespace Fungus
                         {
                             if (i % 1 == 0)
                             {
-                                int hh = imgSrc[i].transform.GetSiblingIndex();
-                                imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                                if(enableTransparent)
+                                {
+                                    imgSrc[i].SetActive(true);
+                                }
+                                else
+                                {
+                                    int hh = imgSrc[i].transform.GetSiblingIndex();
+                                    imgSrc[i].transform.SetSiblingIndex(hh + sibIndex++);
+                                }
                                 yield return waiting;
+                                if(enableTransparent)
+                                {
+                                    imgSrc[i].SetActive(false);
+                                }
                             }
                         }
                     }
@@ -145,7 +184,6 @@ namespace Fungus
                 {
                     Continue();
                     //Next frame stop
-                    yield return null;
                     yield break;
                 }
             }
@@ -176,7 +214,7 @@ namespace Fungus
                 Continue();
             }
             
-            //Halt the prgression until allDone = true
+            //Halt the progression until allDone = true
             if(splashSelect == threeFramu.Disable)
             {
                 StartCoroutine(lastWait());
