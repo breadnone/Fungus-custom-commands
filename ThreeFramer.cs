@@ -17,7 +17,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Animation",
                  "Background Animation",
-                 "Background frame-by-frame animation. Enable transparant to render fade-like type of animation(mostly used to animate bokeh, twinkling lights and so on)")]
+                 "Background frame-by-frame animation. Enable transparant to render fade-like type of animation(mostly used to animate bokeh, twinkling lights, etc) Note : Enable Transparent is more performant. IMPORTANT! Only works with Image")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class ThreeFramer : Command
@@ -31,6 +31,7 @@ namespace Fungus
         [Tooltip("Ping pong/reverse loop style")]
         [SerializeField] protected bool pingPongLoop = true;
         private static int sibIndex = 0;
+        [Tooltip("Use this for rendering fade/blink like animation with alpha background")]
         [SerializeField] protected bool enableTransparent = false;
         //Cache SiblingIndex
         protected static List<int> cacheIndex = new List<int>();
