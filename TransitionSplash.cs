@@ -44,6 +44,7 @@ namespace Fungus
         [SerializeField] public bool disableText = false;
         [Tooltip("Name of a label in this block to jump to")]
         [SerializeField] protected StringData _targetLabel = new StringData("");
+        [SerializeField] protected GameObject UpperMenu;
         protected bool stillTweening = false;
         private TextMeshProUGUI textMesh;
         private Vector3 posxy;
@@ -84,6 +85,7 @@ namespace Fungus
             myCanvas.sortingOrder = sortOrder;
             myGO.AddComponent<CanvasScaler>();
             myCanvasScaler = myGO.GetComponent<CanvasScaler>();
+            myCanvasScaler.referenceResolution = new Vector2(Screen.width, Screen.height);
             myCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             myCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             myCanvasScaler.matchWidthOrHeight = 0.5f;
@@ -125,6 +127,7 @@ namespace Fungus
         }
         public void createObjects()
         {
+            UpperMenu.SetActive(false);
             crCanvas();
             crRawImage();
             if(disableText == false && txtAdd != null)
@@ -135,6 +138,7 @@ namespace Fungus
         protected IEnumerator SequenceOfLines(float seqMove)
         {
             createObjects();
+            
             sqLine.enabled = false;
             posxy = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0));
             RawImage blob0 = Instantiate(sqLine, transform.position, Quaternion.identity) as RawImage;
@@ -144,7 +148,7 @@ namespace Fungus
             blob0.transform.SetParent(nCanvas.transform, false);
             blob0.transform.SetAsFirstSibling();
             blob0.transform.position = posxy + new Vector3(Screen.width / 6 * 0, 0, 0);
-            //Moving text
+
             if(!disableText && txtAdd != null)
             {
                 LeanTween.move(textMesh.gameObject, new Vector3(0, Screen.height, 0), 3);
@@ -305,10 +309,9 @@ namespace Fungus
                 yield return null;
             }
             //Wait for the next frame and destroy canvas
-            yield return new WaitForSeconds(0f);
+            yield return null;
+            UpperMenu.SetActive(true);
             GameObject.Destroy(nCanvas.gameObject);
-            yield return new WaitForSeconds(0f);
-            StopAllCoroutines();
         }
         protected IEnumerator VerticalSqueeze(float seqMove)
         {
@@ -480,10 +483,9 @@ namespace Fungus
                 yield return null;
             }
             //Wait for the next frame and destroy canvas
-            yield return new WaitForSeconds(0f);
+            yield return null;
+            UpperMenu.SetActive(true);
             GameObject.Destroy(nCanvas.gameObject);
-            yield return new WaitForSeconds(0f);
-            StopAllCoroutines();
         }
         protected IEnumerator VerticalSqueeze2(float seqMove)
         {
@@ -652,10 +654,9 @@ namespace Fungus
                 yield return null;
             }
             //Wait for the next frame and destroy canvas
-            yield return new WaitForSeconds(0f);
+            yield return null;
+            UpperMenu.SetActive(true);
             GameObject.Destroy(nCanvas.gameObject);
-            yield return new WaitForSeconds(0f);
-            StopAllCoroutines();
         }
         protected void jumpLbl()
         {
