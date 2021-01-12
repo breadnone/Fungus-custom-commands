@@ -24,6 +24,8 @@ namespace Fungus
     {
         [Tooltip("Enable")]
         [SerializeField] public threeFramu splashSelect;
+        [Tooltip("Enable")]
+        [SerializeField] protected CanvasGroup canvas;
         [Tooltip("Images")]
         [SerializeField] public GameObject[] imgSrc = new GameObject[0];
         public static bool allDone = false;
@@ -33,15 +35,25 @@ namespace Fungus
         private static int sibIndex = 0;
         [Tooltip("Use this for rendering fade/blink like animation with alpha background")]
         [SerializeField] protected bool enableTransparent = false;
+        [Tooltip("CanvasGroup component must exist in parent Canvas!")]
+        [SerializeField] protected bool fadeInOut = false;
+        [Tooltip("Fade duration")]
+        [SerializeField] protected float fadeDuration = 0.5f;
         //Cache SiblingIndex
-        protected static List<int> cacheIndex = new List<int>();
-        
+
+        protected static List<int> cacheIndex = new List<int>();        
         protected void GetSequence()
         {
             if (splashSelect == threeFramu.Enable && stillTweening == false)
-            {                
+            {
+
                 for (int j = 0; j < imgSrc.Length; j++)
                 {
+                    //Set alpha canvas to 0
+                    if(canvas != null)
+                    {
+                        canvas.alpha = 0;
+                    }
                     //Cache SiblingIndex to List
                     cacheIndex.Add(imgSrc[j].transform.GetSiblingIndex());
 
@@ -49,6 +61,16 @@ namespace Fungus
                     {
                         stillTweening = true;
                         allDone = false;
+                        
+                        //Fade in canvas group
+                        if(fadeInOut)
+                        {
+                            if(canvas != null)
+                            {
+                                LeanTween.alphaCanvas(canvas, 1f, fadeDuration);
+                            }
+                        }
+
                         if(!enableTransparent)
                         {
                             imgSrc[j].SetActive(true);
@@ -138,6 +160,15 @@ namespace Fungus
                 }
             }
 
+            //Fade out canvas
+            if(fadeInOut)
+            {
+                if(canvas != null)
+                {
+                    LeanTween.alphaCanvas(canvas, 0f, fadeDuration);
+                }
+            }
+
             for (int i = 0; i < imgSrc.Length; i++)
             {
                 imgSrc[i].SetActive(false);
@@ -200,6 +231,7 @@ namespace Fungus
         public override void  OnEnter()
         {
             Canvas.ForceUpdateCanvases();
+
             switch (splashSelect)
             {
                 case (threeFramu.Disable):
