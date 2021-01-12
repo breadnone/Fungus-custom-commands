@@ -17,7 +17,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Animation",
                  "Background Animation",
-                 "Background frame-by-frame animation. Enable transparant to render fade-like type of animation(mostly used to animate bokeh, twinkling lights, etc) Note : Enable Transparent is more performant. IMPORTANT! Only works with Image")]
+                 "Background frame-by-frame animation. Enable transparant to render fade-like type of animation(mostly used to animate bokeh, twinkling lights, etc) Note : Enable Transparent is more performant. Fade in/out needs CanvasGroup. IMPORTANT! Only works with UI Images")]
     [AddComponentMenu("")]
     [ExecuteInEditMode]
     public class ThreeFramer : Command
