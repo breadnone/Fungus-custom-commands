@@ -3,6 +3,8 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+
 
 namespace Fungus
 {
@@ -57,13 +59,12 @@ namespace Fungus
         [Tooltip("Applies animation to active/non-active charracters")]
         [SerializeField] protected Character character;
         [SerializeField] protected bool waitUntilFinished = false;
-        [Tooltip("Stage to display characters on")]
-        [SerializeField] protected Stage stage;
-        public virtual Stage _Stage { get { return stage; } }
+        [Tooltip("May Fix graphical glitches")]
+        [SerializeField] protected bool enableEndDelay = false;
+        [SerializeField] protected float endDelay = 1f;
         //Forbid user inputs while tweening
-        protected DialogInput dialInput;
         //Cache position
-        protected Vector3 cachePos;
+       
         //Make sure they're done tweening. This won't be affected even if user spam clicks
         protected virtual void OnComplete()
         {
@@ -71,183 +72,217 @@ namespace Fungus
             {
                 Continue();
             }
-            dialInput.enabled = true;
         }
         // Rotates character's sprite
         protected void FlipSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
+                var defPos = character.State.portraitImage.transform.localScale;
+                Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(-1f, 1f, 1f), 0.1f).setEase(LeanTweenType.easeInOutBounce).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    defPos = cachePos;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Super Happy expression
         protected void SuperHappySpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-            //Cache position
-            var defPos = character.State.portraitImage.transform.position;
-            cachePos = defPos;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
+                var defPos = character.State.portraitImage.transform.position;
+                Vector3 cachePos = defPos;
                 LeanTween.moveY(character.State.portraitImage.rectTransform, 150f, 0.2f).setEaseInQuad().setLoopPingPong(2);
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.yellow, 0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    character.State.portraitImage.transform.position = cachePos;
+                    defPos = cachePos;
                     character.State.portraitImage.color = Color.white;
                     OnComplete();
                 }
             );
             }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         // Happy expression
         protected void HappySpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-            //Cache position
-            var defPos = character.State.portraitImage.transform.position;
-            cachePos = defPos;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
+                var defPos = character.State.portraitImage.transform.position;
+                Vector3 cachePos = defPos;
                 LeanTween.moveY(character.State.portraitImage.rectTransform, 100f, 0.2f).setEaseInQuad().setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    character.State.portraitImage.transform.position = cachePos;
+                    defPos = cachePos;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Wobble animation
         protected void StretchBounceSpeakingPortraits(Character character)
         {
             //Prevent user spam clicks
-            dialInput.enabled = false;
 
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
-                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1.2f), 0.3f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2).setOnComplete(
+                var defPos = character.State.portraitImage.transform.localScale;
+                Vector3 cachePos = defPos;
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1f), 0.3f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    defPos = cachePos;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Sinking down animation
         protected void SinkSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
-                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.25f, 1f, 1.25f), 1.5f).setDelay(0.1f).setLoopPingPong(1).setOnComplete(
+                var defPos = character.State.portraitImage.transform.localScale;
+                Vector3 cachePos = defPos;
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.25f, 1f, 1f), 1.5f).setDelay(0.1f).setLoopPingPong(1).setOnComplete(
                 () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    defPos = cachePos;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Zoom In animation
         protected void ZoomInSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
-                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.4f, 1.4f, 1.4f), 0.3f).setEase(LeanTweenType.easeOutBounce).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
+                var defPos = character.State.portraitImage.transform.localScale;
+                Vector3 cachePos = defPos;
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.4f, 1.4f, 1f), 0.3f).setEase(LeanTweenType.easeOutBounce).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    defPos = cachePos;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Zoom In + Color animation
         protected void ZoomInColorSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
-                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.3f, 1.3f, 1.3f), 0.3f).setDelay(0.1f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
+                var defPos = character.State.portraitImage.transform.localScale;
+                Vector3 cachePos = defPos;
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.3f, 1.3f, 1f), 0.3f).setDelay(0.1f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.clear, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    defPos = cachePos;
                     character.State.portraitImage.color = Color.white;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Stretch Wobble with color animation
         protected void StretchWobbleColorizeSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
-                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1.2f), 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
+                var defPos = character.State.portraitImage.transform.localScale;
+                Vector3 cachePos = defPos;
+                LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1f), 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.green, 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1f, 1f, 1f), 0f);
+                    defPos = cachePos;
                     character.State.portraitImage.color = Color.white;
                     OnComplete();
                 }
             );
             }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         //Panic animation to character
         protected void PanicSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-            //Cache position
-            var defPos = character.State.portraitImage.transform.position;
-            cachePos = defPos;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
+                var defPos = character.State.portraitImage.transform.position;
+                Vector3 cachePos = defPos;
                 LeanTween.moveX(character.State.portraitImage.rectTransform, 100f, 0.2f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
                 () =>
                 {
-                    character.State.portraitImage.transform.position = cachePos;
+                    defPos = cachePos;
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Mad expression
         protected void Mad2SpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.cyan, 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -257,14 +292,17 @@ namespace Fungus
                 }
             );
             }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         // Mad expression
         protected void MadSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.red, 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2
                 ).setOnComplete(
@@ -275,31 +313,37 @@ namespace Fungus
                 }
             );
             }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         // Shock expression
         protected void ShockSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.1f).setLoopPingPong(3).setEase(LeanTweenType.linear).setDelay(0.1f).setOnComplete(
                 () =>
                 {
-                    LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0.1f);
+                    LeanTween.alpha(character.State.portraitImage.rectTransform, 1f, 0f);
                     OnComplete();
                 }
             );
+            }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
             }
         }
         // Aqua Color
         protected void AquaSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.color(character.State.portraitImage.rectTransform, new Color32(0, 201, 254, 1), 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -309,15 +353,17 @@ namespace Fungus
                 }
             );
             }
-
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         // Pink color
         protected void PinkSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.color(character.State.portraitImage.rectTransform, new Color32(232, 0, 254, 1), 0.1f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -327,15 +373,18 @@ namespace Fungus
                 }
             );
             }
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
 
         }
         // Cyan color
         protected void CyanSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.cyan, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -345,15 +394,17 @@ namespace Fungus
                 }
             );
             }
-
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         // Clear color
         protected void ClearSpeakingPortraits(Character character)
         {
-            //Prevent user spam clicks
-            dialInput.enabled = false;
-
-            if (character != null)
+            if (character != null && character.State.portraitImage != null)
             {
                 LeanTween.alpha(character.State.portraitImage.rectTransform, 0f, 0.2f).setLoopPingPong(2).setEase(LeanTweenType.linear).setDelay(0.2f).setOnComplete(
                 () =>
@@ -363,45 +414,16 @@ namespace Fungus
                 }
             );
             }
-
+            else
+            {
+                Debug.Log("Character has not been spawned yet!");
+                Continue();
+                return;
+            }
         }
         public override void OnEnter()
         {
-            // The canvas may fail to update if it's enabled in the first game frame.
-            // To fix this we just need to force a canvas update when the object is enabled.
             Canvas.ForceUpdateCanvases();
-
-            SayDialog sayD = SayDialog.GetSayDialog();
-            DialogInput dialI = sayD.GetComponent<DialogInput>();
-            dialInput = dialI;
-
-            if (stage == null)
-            {
-                // If no default specified, try to get any portrait stage in the scene
-                stage = FindObjectOfType<Stage>();
-                // If portrait stage does not exist, do nothing
-                if (stage == null)
-                {
-                    Continue();
-                    return;
-                }
-            }
-
-            if (IsDisplayNone(display))
-            {
-                if (stage == null)
-                {
-                    // If no default specified, try to get any portrait stage in the scene
-                    stage = FindObjectOfType<Stage>();
-                    // If portrait stage does not exist, do nothing
-                    if (stage == null)
-                    {
-                        Continue();
-                        return;
-                    }
-                }
-                Continue();
-            }
             switch (display)
             {
                 case (CharStageDisplayType.Rotate):
@@ -471,12 +493,8 @@ namespace Fungus
             {
                 return "";
             }
-            string stageSummary = "";
-            if (stage != null)
-            {
-                stageSummary = " \"" + stage.name + "\"";
-            }
-            return displaySummary + stageSummary;
+
+            return displaySummary;
         }
         public override Color GetButtonColor()
         {
