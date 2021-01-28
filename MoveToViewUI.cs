@@ -50,13 +50,13 @@ namespace Fungus
         [SerializeField] protected Character character;
 
         [Tooltip("Scale character")]
-        [SerializeField] protected Vector2 scaleCharacterUI = new Vector2(1f, 1f);
+        [SerializeField] protected Vector3 scaleCharacterUI = new Vector3(1f, 1f, 1f);
         [Tooltip("Enable scale")]
         [SerializeField] protected bool enableScale = true;
         [Tooltip("Enable move")]
         [SerializeField] protected bool enableMove = false;
         [Tooltip("Move character")]
-        [SerializeField] protected Vector2 moveCharacterUI = new Vector3(1f, 1f, 1f);
+        [SerializeField] protected Vector3 moveCharacterUI = new Vector3(0f, 0f, 0f);
         [Tooltip("Duration")]
         [SerializeField] protected float scaleMoveDuration = 0.5f;
         [Tooltip("Ease type for the scale tween.")]
@@ -91,6 +91,7 @@ namespace Fungus
 
                     LeanTween.scale(c, Vector3.one, 0.5f).setRecursive(true).setEase(easeType).setOnComplete(() =>
                     {
+                        c.anchoredPosition = Vector3.zero;
                         isCompleted = false;
                         //SetToDefaultCanvasSpace();
                     });
@@ -104,7 +105,6 @@ namespace Fungus
                 Canvas.ForceUpdateCanvases();
                 for (int i = 0; i < cacheChar.Count; i++)
                 {
-
                     var b = cacheChar[i];
                     var c = b.GetComponent<RectTransform>();
                     
@@ -116,31 +116,35 @@ namespace Fungus
                     
                     LeanTween.value(b, newOffsetMinnX, 0f, 0.5f).setOnUpdate((float val) =>
                     {
-                        c.offsetMin = new Vector2(val, c.offsetMin.y);
+                        c.offsetMin = new Vector3(val, c.offsetMin.y, 0f);
                     }).setOnComplete(() =>
                         {
+                            c.offsetMin = new Vector2(0, 0);
                             moveIsCompleted = false;
                         });
                     LeanTween.value(b, newOffsetMinnY, 0f, 0.5f).setOnUpdate((float val) =>
                     {
-                        c.offsetMin = new Vector2(c.offsetMin.x, val);
+                        c.offsetMin = new Vector3(c.offsetMin.x, val, 0f);
                     }).setOnComplete(() =>
                         {
+                            c.offsetMin = new Vector2(0, 0);
                             moveIsCompleted1 = false;
                         });
 
                     LeanTween.value(b, newOffsetMaxxX, 0f, 0.5f).setOnUpdate((float val) =>
                     {
-                        c.offsetMax = new Vector2(val, c.offsetMax.y);
+                        c.offsetMax = new Vector3(val, c.offsetMax.y, 0f);
                     }).setOnComplete(() =>
                         {
+                            c.offsetMax = new Vector2(0, 0);
                             moveIsCompleted2 = false;
                         });
                     LeanTween.value(b, newOffsetMaxxY, 0f, 0.5f).setOnUpdate((float val) =>
                     {
-                        c.offsetMax = new Vector2(c.offsetMax.x, val);
+                        c.offsetMax = new Vector3(c.offsetMax.x, val, 0f);
                     }).setOnComplete(() =>
                         {
+                            c.offsetMax = new Vector2(0, 0);
                             moveIsCompleted3 = false;
                         });
 
@@ -153,26 +157,31 @@ namespace Fungus
             while(true)
             {
                 yield return null;
-                if(!moveIsCompleted && !moveIsCompleted1 && !moveIsCompleted2 && !moveIsCompleted3)
-                {
-                    cacheChar = new List<GameObject>();
-                    yield break;
+                if(!moveIsCompleted && !moveIsCompleted1 && !moveIsCompleted2 && !moveIsCompleted3 && !isCompleted)
+                {                    
+                    break;
                 }
             }
+
+            StopsAll();
+        }
+
+        protected virtual void StopsAll()
+        {
+            for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
+            {
+                var b = character.State.holder.transform.GetChild(i).gameObject;
+                b.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+            }
+            cacheChar = new List<GameObject>();
+            StopAllCoroutines();
         }
 
         protected virtual void ScaleMoveCharacter()
         {
             if (character && character.State.portraitImage != null)
             {
-                if (character != null)
-                {
-                    for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
-                    {
-                        var b = character.State.holder.transform.GetChild(i).gameObject;
-                        cacheChar.Add(b);
-                    }
-                }
+
                 if(cacheChar != null)
                 {
                     var holdersS = character.State.holder.GetComponent<RectTransform>();
@@ -201,7 +210,6 @@ namespace Fungus
                         {
                             var b = cacheChar[i];
                             var c = b.GetComponent<RectTransform>();
-
                             LeanTween.move(c, moveCharacterUI, scaleMoveDuration).setEase(easeType).setOnComplete(() =>
                             {
                                 moveIsCompleted = true;
@@ -211,32 +219,9 @@ namespace Fungus
                             });
                         }
                     }
-                    //OnCompleted();
                 }
             }
         }
-
-        protected IEnumerator OnCompleted()
-        {
-            while (true)
-            {
-                yield return null;
-                if (enableScale == false && enableMove == true && moveIsCompleted == true)
-                {
-                    break;
-                }
-                if (enableScale == true && enableMove == false && isCompleted == true)
-                {
-                    break;
-                }
-                if (enableScale == true && enableMove == true && moveIsCompleted == true && isCompleted == true)
-                {
-                    break;
-                }
-            }
-            //SetToDefaultCanvasSpace();
-        }
-
         protected virtual IEnumerator SetToDefaultCanvasSpace()
         {
             if (canvas != null)
@@ -268,22 +253,6 @@ namespace Fungus
                     canvas.renderMode = RenderMode.WorldSpace;
                     canvas.worldCamera = targetCamera;
                 }
-
-                /*
-                                    if(targetCamera != null)
-                                    {
-                                        canvasIsWorldSpace = true;
-
-                                        canvas.renderMode = RenderMode.ScreenSpaceCamera;
-                                        canvas.worldCamera = targetCamera;
-
-                                        var canvy = canvas.GetComponent<CanvasScaler>();
-                                        canvy.referenceResolution = screenResolution;
-                                        canvy.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                                        canvy.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-                                    }
-                                    */
-
             }
         }
 
@@ -298,8 +267,12 @@ namespace Fungus
         {
             if (status == scaleCharLeanTweenType.SetCharacterScaleToDefault)
             {
-
-                //SetToDefaultCanvasSpace();
+                moveIsCompleted = true;
+                moveIsCompleted1 = true;
+                moveIsCompleted2 = true;
+                moveIsCompleted3 = true;
+                isCompleted = true;
+                    
                 SetDefaultCharPosition();
                 SetDefaultCharScale();
                 AcquireCamera();
@@ -319,12 +292,9 @@ namespace Fungus
 
                 cameraManager.PanToPosition(targetCamera, targetPosition, targetRotation, targetSize, duration, delegate
                 {
-                    SayDialog sayDialog = SayDialog.GetSayDialog();
-                    sayDialog.GetComponent<DialogInput>().enabled = false;
                     if (waitUntilFinished)
                     {                        
                         Continue();
-                        sayDialog.GetComponent<DialogInput>().enabled = true;
                     }
                 }, orthoSizeTweenType, posTweenType, rotTweenType);
 
