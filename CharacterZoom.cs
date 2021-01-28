@@ -47,16 +47,14 @@ namespace Fungus
 
         [Tooltip("Wait until the fade has finished before executing next command")]
         [SerializeField] protected bool waitUntilFinished = true;
-        private static List<GameObject> cacheChar = new List<GameObject>();
         protected bool isCompleted = false;
         protected bool moveIsCompleted = false; protected bool moveIsCompleted1 = false; protected bool moveIsCompleted2 = false; protected bool moveIsCompleted3 = false; protected bool rotIsTru = false;   
         protected virtual void SetDefaultCharScale()
         {
-            for (int i = 0; i < cacheChar.Count; i++)
+            for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
             {
-                Canvas.ForceUpdateCanvases();
-                var b = cacheChar[i];
-                var c = b.GetComponent<RectTransform>();
+                var a = character.State.holder.transform.GetChild(i).gameObject;
+                var c = a.GetComponent<RectTransform>();
 
                 LeanTween.scale(c, Vector3.one, scaleMoveDuration).setRecursive(true).setEase(easeType).setOnComplete(() =>
                 {
@@ -73,9 +71,9 @@ namespace Fungus
         protected virtual void SetDefaultCharPosition()
         {
             Canvas.ForceUpdateCanvases();
-            for (int i = 0; i < cacheChar.Count; i++)
+            for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
             {
-                var b = cacheChar[i];
+                var b = character.State.holder.transform.GetChild(i).gameObject;
                 var c = b.GetComponent<RectTransform>();
 
                 float newOffsetMinnX = c.offsetMin.x;
@@ -124,7 +122,6 @@ namespace Fungus
                 yield return null;
                 if (!moveIsCompleted && !moveIsCompleted1 && !moveIsCompleted2 && !moveIsCompleted3 && !isCompleted && !rotIsTru)
                 {
-                    cacheChar = new List<GameObject>();
                     break;
                 }
             }
@@ -149,13 +146,11 @@ namespace Fungus
         {
             if (character && character.State.portraitImage != null)
             {
-                if (cacheChar != null)
+                for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
                 {
-                    var holdersS = character.State.holder.GetComponent<RectTransform>();
-                    for (int i = 0; i < cacheChar.Count; i++)
-                    {
-                        var b = cacheChar[i];
-                        var c = b.GetComponent<RectTransform>();
+                    var b = character.State.holder.transform.GetChild(i).gameObject;
+                    var c = b.GetComponent<RectTransform>();
+
                         if (enableScale)
                         {
                             LeanTween.scale(c, scaleCharacterUI, scaleMoveDuration).setRecursive(true).setEase(easeType).setOnComplete(() =>
@@ -190,8 +185,8 @@ namespace Fungus
                                     Continues();
                                 });   
                         }
-                    }
                 }
+                
             }
         }
 
@@ -221,19 +216,7 @@ namespace Fungus
             }
             else
             {
-                //Create new list on first run
-                cacheChar = new List<GameObject>();
-                //Cache the character to a list
-                if (character != null)
-                {
-                    for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
-                    {
-                        var b = character.State.holder.transform.GetChild(i).gameObject;
-                        cacheChar.Add(b);
-                    }
-                }
-
-                if (character != null)
+                 if (character != null)
                 {
                     ZoomRotateCharacter();
                 }
