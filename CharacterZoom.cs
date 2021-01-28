@@ -70,7 +70,6 @@ namespace Fungus
         }
         protected virtual void SetDefaultCharPosition()
         {
-            Canvas.ForceUpdateCanvases();
             for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
             {
                 var b = character.State.holder.transform.GetChild(i).gameObject;
@@ -198,6 +197,7 @@ namespace Fungus
             {
                 if(character != null)
                 {
+                    Canvas.ForceUpdateCanvases();
                     moveIsCompleted = true;
                     moveIsCompleted1 = true;
                     moveIsCompleted2 = true;
@@ -218,6 +218,7 @@ namespace Fungus
             {
                  if (character != null)
                 {
+                    Canvas.ForceUpdateCanvases();
                     ZoomRotateCharacter();
                 }
 
