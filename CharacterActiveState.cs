@@ -78,7 +78,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.localScale;
+                var defPos = character.State.portraitImage.rectTransform.sizeDelta;
                 Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(-1f, 1f, 1f), 0.1f).setEase(LeanTweenType.easeInOutBounce).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -100,7 +100,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.position;
+                var defPos = character.State.portraitImage.rectTransform.anchoredPosition;
                 Vector3 cachePos = defPos;
                 LeanTween.moveY(character.State.portraitImage.rectTransform, 150f, 0.2f).setEaseInQuad().setLoopPingPong(2);
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.yellow, 0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
@@ -124,7 +124,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.position;
+                var defPos = character.State.portraitImage.rectTransform.anchoredPosition;
                 Vector3 cachePos = defPos;
                 LeanTween.moveY(character.State.portraitImage.rectTransform, 100f, 0.2f).setEaseInQuad().setLoopPingPong(2).setOnComplete(
                 () =>
@@ -148,7 +148,7 @@ namespace Fungus
 
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.localScale;
+                var defPos = character.State.portraitImage.rectTransform.sizeDelta;
                 Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1f), 0.3f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -170,7 +170,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.localScale;
+                var defPos = character.State.portraitImage.rectTransform.sizeDelta;
                 Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.25f, 1f, 1f), 1.5f).setDelay(0.1f).setLoopPingPong(1).setOnComplete(
                 () =>
@@ -192,7 +192,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.localScale;
+                var defPos = character.State.portraitImage.rectTransform.sizeDelta;
                 Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.4f, 1.4f, 1f), 0.3f).setEase(LeanTweenType.easeOutBounce).setDelay(0.2f).setLoopPingPong(2).setOnComplete(
                 () =>
@@ -214,7 +214,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.localScale;
+                var defPos = character.State.portraitImage.rectTransform.sizeDelta;
                 Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.3f, 1.3f, 1f), 0.3f).setDelay(0.1f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.clear, 0.3f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
@@ -238,7 +238,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.localScale;
+                var defPos = character.State.portraitImage.rectTransform.sizeDelta;
                 Vector3 cachePos = defPos;
                 LeanTween.scale(character.State.portraitImage.rectTransform, new Vector3(1.2f, 1f, 1f), 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeOutBounce).setLoopPingPong(2);
                 LeanTween.color(character.State.portraitImage.rectTransform, Color.green, 0.3f).setDelay(0.2f).setEase(LeanTweenType.easeInQuad).setLoopPingPong(2).setOnComplete(
@@ -262,7 +262,7 @@ namespace Fungus
         {
             if (character != null && character.State.portraitImage != null)
             {
-                var defPos = character.State.portraitImage.transform.position;
+                var defPos = character.State.portraitImage.rectTransform.anchoredPosition;
                 Vector3 cachePos = defPos;
                 LeanTween.moveX(character.State.portraitImage.rectTransform, 100f, 0.2f).setEase(LeanTweenType.easeInQuad).setDelay(0.1f).setLoopPingPong(2).setOnComplete(
                 () =>
