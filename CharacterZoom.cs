@@ -44,11 +44,11 @@ namespace Fungus
         [SerializeField] protected float scaleMoveDuration = 0.3f;
         [Tooltip("Ease type for the scale tween.")]
         [SerializeField] protected LeanTweenType easeType;
+        protected bool isCompleted = false;
+        protected bool rotIsTru = false;
 
         [Tooltip("Wait until the fade has finished before executing next command")]
         [SerializeField] protected bool waitUntilFinished = true;
-        protected bool isCompleted = false;
-        protected bool moveIsCompleted = false; protected bool moveIsCompleted1 = false; protected bool moveIsCompleted2 = false; protected bool moveIsCompleted3 = false; protected bool rotIsTru = false;   
         protected virtual void SetDefaultCharScale()
         {
             for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
@@ -58,17 +58,17 @@ namespace Fungus
 
                 LeanTween.scale(c, Vector3.one, scaleMoveDuration).setRecursive(true).setEase(easeType).setOnComplete(() =>
                 {
-                    isCompleted = false;
+                    isCompleted = true;
                 });
                 //Reset character rotation if any
                 LeanTween.rotateAround(c, Vector3.forward, 0, scaleMoveDuration).setEaseOutQuad().setOnComplete(() =>
                 {
                     c.rotation = Quaternion.identity;
-                    rotIsTru = false;
+                    rotIsTru = true;
                 });
             }
         }
-        protected virtual void SetDefaultCharPosition()
+        protected virtual IEnumerator SetDefaultCharPosition()
         {
             for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
             {
@@ -81,19 +81,24 @@ namespace Fungus
                 float newOffsetMaxxX = c.offsetMax.x;
                 float newOffsetMaxxY = c.offsetMax.y;
 
+                bool moveIsCompleted = false;
+                bool moveIsCompleted1 = false;
+                bool moveIsCompleted2 = false;
+                bool moveIsCompleted3 = false;
+
                 LeanTween.value(b, newOffsetMinnX, 0f, scaleMoveDuration).setOnUpdate((float val) =>
                 {
                     c.offsetMin = new Vector2(val, c.offsetMin.y);
                 }).setOnComplete(() =>
                     {                        
-                        moveIsCompleted = false;
+                        moveIsCompleted = true;
                     });
                 LeanTween.value(b, newOffsetMinnY, 0f, scaleMoveDuration).setOnUpdate((float val) =>
                 {
                     c.offsetMin = new Vector2(c.offsetMin.x, val);
                 }).setOnComplete(() =>
                     {
-                        moveIsCompleted1 = false;
+                        moveIsCompleted1 = true;
                     });
 
                 LeanTween.value(b, newOffsetMaxxX, 0f, scaleMoveDuration).setOnUpdate((float val) =>
@@ -101,40 +106,36 @@ namespace Fungus
                     c.offsetMax = new Vector2(val, c.offsetMax.y);
                 }).setOnComplete(() =>
                     {
-                        moveIsCompleted2 = false;
+                        moveIsCompleted2 = true;
                     });
                 LeanTween.value(b, newOffsetMaxxY, 0f, scaleMoveDuration).setOnUpdate((float val) =>
                 {
                     c.offsetMax = new Vector2(c.offsetMax.x, val);
                 }).setOnComplete(() =>
                     {
-                        moveIsCompleted3 = false;
+                        moveIsCompleted3 = true;
                     });
 
-                StartCoroutine(FinalStop());
+                    while(!moveIsCompleted && !moveIsCompleted1 && !moveIsCompleted2 && !moveIsCompleted3)
+                    {
+                        yield return null;
+                    }
+                Stops();
             }
         }
-        protected virtual IEnumerator FinalStop()
-        {
-            while (true)
-            {
-                yield return null;
-                if (!moveIsCompleted && !moveIsCompleted1 && !moveIsCompleted2 && !moveIsCompleted3 && !isCompleted && !rotIsTru)
-                {
-                    break;
-                }
-            }
-            Stops();
-        }
+
         protected virtual void Stops()
         {
-            for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
+            if(rotIsTru && isCompleted)
             {
-                var b = character.State.holder.transform.GetChild(i).gameObject;
-                b.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+                for (int i = character.State.holder.transform.childCount - 1; i >= 0; i--)
+                {
+                    var b = character.State.holder.transform.GetChild(i).gameObject;
+                    b.GetComponent<RectTransform>().anchoredPosition = Vector3.zero;
+                }
+                Continue();
+                StopAllCoroutines();
             }
-            Continue();
-            StopAllCoroutines();
         }
         protected virtual void Continues()
         {
@@ -154,7 +155,6 @@ namespace Fungus
                         {
                             LeanTween.scale(c, scaleCharacterUI, scaleMoveDuration).setRecursive(true).setEase(easeType).setOnComplete(() =>
                                 {
-                                    isCompleted = true;
                                     Continues();
                                 });
                         }
@@ -162,12 +162,7 @@ namespace Fungus
                         {
                             LeanTween.move(c, moveCharacterUI, scaleMoveDuration).setEase(easeType).setOnComplete(() =>
                                 {
-                                    moveIsCompleted = true;
-                                    moveIsCompleted1 = true;
-                                    moveIsCompleted2 = true;
-                                    moveIsCompleted3 = true;
                                     Continues();
-                                    
                                 });
                         }
                         if (flipCharacter)
@@ -198,14 +193,8 @@ namespace Fungus
                 if(character != null)
                 {
                     Canvas.ForceUpdateCanvases();
-                    moveIsCompleted = true;
-                    moveIsCompleted1 = true;
-                    moveIsCompleted2 = true;
-                    moveIsCompleted3 = true;
-                    isCompleted = true;
-                    rotIsTru = true;
 
-                    SetDefaultCharPosition();
+                    StartCoroutine(SetDefaultCharPosition());
                     SetDefaultCharScale();
                 }
 
