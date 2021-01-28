@@ -39,7 +39,6 @@ namespace Fungus
         [SerializeField] protected Vector3 moveCharacterUI = new Vector3(0f, 0f, 0f);
         [Tooltip("Rotate angle in floats")]
         [SerializeField] protected float rotateAngle = 0f;
-
         [Tooltip("Duration")]
         [SerializeField] protected float scaleMoveDuration = 0.3f;
         [Tooltip("Ease type for the scale tween.")]
@@ -137,9 +136,12 @@ namespace Fungus
                 StopAllCoroutines();
             }
         }
-        protected virtual void Continues()
+        protected virtual IEnumerator Continues()
         {
+            float addFloat = 0.1f;
+            yield return new WaitForSeconds(scaleMoveDuration + addFloat);
             Continue();
+            yield break;
         }
 
         protected virtual void ZoomRotateCharacter()
@@ -153,34 +155,23 @@ namespace Fungus
 
                         if (enableScale)
                         {
-                            LeanTween.scale(c, scaleCharacterUI, scaleMoveDuration).setRecursive(true).setEase(easeType).setOnComplete(() =>
-                                {
-                                    Continues();
-                                });
+                            LeanTween.scale(c, scaleCharacterUI, scaleMoveDuration).setRecursive(false).setEase(easeType);
                         }
                         if (enableMove)
                         {
-                            LeanTween.move(c, moveCharacterUI, scaleMoveDuration).setEase(easeType).setOnComplete(() =>
-                                {
-                                    Continues();
-                                });
+                            LeanTween.move(c, moveCharacterUI, scaleMoveDuration).setRecursive(false).setEase(easeType);
                         }
                         if (flipCharacter)
                         {
-                            LeanTween.scale(c, new Vector3(-scaleCharacterUI.x, scaleCharacterUI.y, scaleCharacterUI.z), scaleMoveDuration).setEase(easeType).setOnComplete(() =>
-                                {
-                                    Continues();
-                                });                          
+                            LeanTween.scale(c, new Vector3(-scaleCharacterUI.x, scaleCharacterUI.y, scaleCharacterUI.z), scaleMoveDuration).setRecursive(false).setEase(easeType);                          
                         }
                         if(enableRotate)
                         {
-                            LeanTween.rotateAround(c, Vector3.forward, rotateAngle, scaleMoveDuration).setEase(easeType).setOnComplete(() =>
-                                {
-                                    Continues();
-                                });   
+                            LeanTween.rotateAround(c, Vector3.forward, rotateAngle, scaleMoveDuration).setRecursive(false).setEase(easeType);
                         }
+                    
+                        StartCoroutine(Continues());
                 }
-                
             }
         }
 
