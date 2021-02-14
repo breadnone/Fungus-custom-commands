@@ -24,9 +24,9 @@ namespace Fungus
     /// <summary>
     /// Writes text in a dialog box.
     /// </summary>
-    [CommandInfo("Narrative", 
-                 "TMPro auto text effects", 
-                 "Wraps certain texts with TMPro link tag. Must be placed at the very first order in your block")]
+    [CommandInfo("Narrative",
+                 "TMPro Auto Text Effects",
+                 "Wraps certain texts with TMPro link tags and must be placed at the very first order in your block")]
     [AddComponentMenu("")]
     public class TMProAutoEffectLoader : Command
     {
@@ -36,43 +36,48 @@ namespace Fungus
             [SerializeField] public string wordList;
             [SerializeField] public TMProEffectList effect;
         }
+        [Tooltip("Words to animate")]
         [SerializeField] protected BulkWords[] words = new BulkWords[1];
-
+        [Tooltip("Flowchart")]
         [SerializeField] protected Flowchart flowchart;
-        
-        [SerializeField] protected float saveWait = 2f;
+        [Tooltip("Add delay before progressing to the next command")]
+        [SerializeField] protected float waitTime = 2f;
 
         #region Public members
 
         protected IEnumerator TMLoader()
         {
-                Say[] says = flowchart.GetComponents<Say>();
+            Say[] says = flowchart.GetComponents<Say>();
 
-                    for(int i = 0; i < words.Length; i++)
+            for (int i = 0; i < words.Length; i++)
+            {
+                var dWord = words[i].wordList;
+                if (!String.IsNullOrEmpty(dWord) && words[i].effect != TMProEffectList.None)
+                {
+                    for (int j = 0; j < says.Length; j++)
                     {
-                        var dWord = words[i].wordList;
-                        if(!String.IsNullOrEmpty(dWord) && words[i].effect != TMProEffectList.None )
+                        if (says[j] != null && !String.IsNullOrEmpty(says[j].storyText))
                         {
-                            for(int j = 0; j < says.Length; j++)
-                            {
-                                if (says[j] != null && !String.IsNullOrEmpty(says[j].storyText))
-                                {
-                                    var c = says[j];
+                            var say = says[j];
 
-                                    string bqm = "<link=\"" + words[i].effect.ToString() + "\">" + dWord + "</link>";
-                                    string a = c.storyText.Replace(dWord, bqm);
-                                    c.storyText = a;
-                                }
-                            }
+                            string bqm = "<link=\"" + words[i].effect.ToString() + "\">" + dWord + "</link>";
+                            string tmpStrings = say.storyText.Replace(dWord, bqm);
+                            say.storyText = tmpStrings;
                         }
                     }
+                }
+                else
+                {
+                    yield break;
+                }
+            }
 
-                yield return new WaitForSeconds(saveWait);
-                Continue();
+            yield return new WaitForSeconds(waitTime);
+            Continue();
         }
         public override void OnEnter()
         {
-            if(flowchart != null)
+            if (flowchart != null)
             {
                 StartCoroutine(TMLoader());
             }
