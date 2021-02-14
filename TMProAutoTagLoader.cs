@@ -26,7 +26,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Narrative", 
                  "TMPro Auto Tags Loader", 
-                 "Recursively add narrative tags to available Says. Can be combined with TMProAutoEffectLoader if placed after")]
+                 "Recursively add narrative tags to available Says. Can be combined with TMProAutoEffectLoader if placed after. Must be placed at the very first order in your block")]
     [AddComponentMenu("")]
     public class TMProAutoTagLoader : Command
     {

@@ -26,7 +26,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Narrative", 
                  "TMPro auto text effects", 
-                 "Wraps certain texts with TMPro link tag")]
+                 "Wraps certain texts with TMPro link tag. Must be placed at the very first order in your block")]
     [AddComponentMenu("")]
     public class TMProAutoEffectLoader : Command
     {
