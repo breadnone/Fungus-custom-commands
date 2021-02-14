@@ -64,10 +64,6 @@ namespace Fungus
                         }
                     }
                 }
-                else
-                {
-                    yield break;
-                }
             }
 
             yield return new WaitForSeconds(waitTime);
