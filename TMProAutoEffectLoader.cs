@@ -26,7 +26,7 @@ namespace Fungus
     /// </summary>
     [CommandInfo("Narrative",
                  "TMPro Auto Text Effects",
-                 "Wraps certain texts with TMPro link tags and must be placed at the very first order in your block")]
+                 "Wraps certain texts with TMPro link tags in your and must be placed at the very first order in your block")]
     [AddComponentMenu("")]
     public class TMProAutoEffectLoader : Command
     {
@@ -42,9 +42,7 @@ namespace Fungus
         [SerializeField] protected Flowchart flowchart;
         [Tooltip("Add delay before progressing to the next command")]
         [SerializeField] protected float waitTime = 2f;
-
         #region Public members
-
         protected IEnumerator TMLoader()
         {
             Say[] says = flowchart.GetComponents<Say>();
