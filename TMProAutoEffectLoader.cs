@@ -55,17 +55,13 @@ namespace Fungus
                         {
                             for(int j = 0; j < says.Length; j++)
                             {
-                                if (says[j] != null)
+                                if (says[j] != null && !String.IsNullOrEmpty(says[j].storyText))
                                 {
                                     var c = says[j];
 
-                                    if(c.storyText != "")
-                                    {
-                                        string bqm = "<link=\"" + words[i].effect.ToString() + "\">" + dWord + "</link>";
-                                        string a = c.storyText.Replace(dWord, bqm);
-                                        c.storyText = a;
-                                    }
-
+                                    string bqm = "<link=\"" + words[i].effect.ToString() + "\">" + dWord + "</link>";
+                                    string a = c.storyText.Replace(dWord, bqm);
+                                    c.storyText = a;
                                 }
                             }
                         }
@@ -73,9 +69,7 @@ namespace Fungus
 
                 yield return new WaitForSeconds(saveWait);
                 Continue();
-            
         }
-
         public override void OnEnter()
         {
             if(flowchart != null)
