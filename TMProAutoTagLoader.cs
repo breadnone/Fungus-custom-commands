@@ -162,7 +162,17 @@ namespace Fungus
                 Continue();
             }
         }
+        public override string GetSummary()
+        {
+            string nullFlowchart = "";
 
+            if (flowchart == null)
+            {
+                return nullFlowchart = "Error: No flowchart selected";
+            }
+
+            return nullFlowchart;
+        }
         public override Color GetButtonColor()
         {
             return new Color32(184, 210, 235, 255);
