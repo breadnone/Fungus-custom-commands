@@ -25,7 +25,7 @@ namespace Fungus
     /// Writes text in a dialog box.
     /// </summary>
     [CommandInfo("Narrative", 
-                 "Auto Tags Loader", 
+                 "TMPro Auto Tags Loader", 
                  "Recursively add narrative tags to available Says. Can be combined with TMProAutoEffectLoader if placed after")]
     [AddComponentMenu("")]
     public class TMProAutoTagLoader : Command
