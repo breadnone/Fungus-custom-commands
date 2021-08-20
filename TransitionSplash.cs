@@ -127,7 +127,10 @@ namespace Fungus
         }
         public void createObjects()
         {
-            UpperMenu.SetActive(false);
+            if(UpperMenu != null)
+            {            
+                UpperMenu.SetActive(false);
+            }
             crCanvas();
             crRawImage();
             if(disableText == false && txtAdd != null)
@@ -310,7 +313,10 @@ namespace Fungus
             }
             //Wait for the next frame and destroy canvas
             yield return null;
-            UpperMenu.SetActive(true);
+            if(UpperMenu != null)
+            {    
+                UpperMenu.SetActive(true);
+            }
             GameObject.Destroy(nCanvas.gameObject);
         }
         protected IEnumerator VerticalSqueeze(float seqMove)
@@ -484,7 +490,10 @@ namespace Fungus
             }
             //Wait for the next frame and destroy canvas
             yield return null;
-            UpperMenu.SetActive(true);
+            if(UpperMenu != null)
+            {    
+                UpperMenu.SetActive(true);
+            }
             GameObject.Destroy(nCanvas.gameObject);
         }
         protected IEnumerator VerticalSqueeze2(float seqMove)
@@ -655,7 +664,10 @@ namespace Fungus
             }
             //Wait for the next frame and destroy canvas
             yield return null;
-            UpperMenu.SetActive(true);
+            if(UpperMenu != null)
+            {    
+                UpperMenu.SetActive(true);
+            }
             GameObject.Destroy(nCanvas.gameObject);
         }
         protected void jumpLbl()
